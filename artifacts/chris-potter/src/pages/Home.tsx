@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import NavBar from "@/components/shared/NavBar";
 import Footer from "@/components/shared/Footer";
-import SocialSidebar from "@/components/shared/SocialSidebar";
+import HeroSocialBar from "@/components/shared/HeroSocialBar";
 import { filmography, type CreditType, type MediumType } from "@/data/filmography";
 import { timelineEvents, awards } from "@/data/timeline";
 import { quotes } from "@/data/quotes";
@@ -425,7 +425,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#07090F] text-white overflow-x-hidden">
       <NavBar />
-      <SocialSidebar />
 
       {/* ── HERO ── */}
       <section id="hero" className="relative min-h-screen flex flex-col justify-end pb-16 md:pb-20">
@@ -440,7 +439,9 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#07090F]/60 via-transparent to-transparent" />
         </div>
 
-        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
+        <HeroSocialBar />
+
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32 pl-20 md:pl-24">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }}
             className="flex flex-wrap gap-3 mb-8">
             {ROLES.map(role => (

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Contact from "@/pages/Contact";
 import Fanbase from "@/pages/Fanbase";
+import PressKit from "@/pages/PressKit";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/contact" component={Contact} />
       <Route path="/fanbase" component={Fanbase} />
+      <Route path="/press-kit" component={PressKit} />
       <Route component={Home} />
     </Switch>
   );

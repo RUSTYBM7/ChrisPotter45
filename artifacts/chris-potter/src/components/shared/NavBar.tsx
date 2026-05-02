@@ -34,7 +34,6 @@ export default function NavBar({ alwaysDark = false }: NavBarProps) {
   };
 
   const showDark = alwaysDark || scrolled;
-
   const isActive = (path: string) => location === path;
 
   return (
@@ -44,60 +43,42 @@ export default function NavBar({ alwaysDark = false }: NavBarProps) {
       }`}
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
-        {/* Logo */}
         <button
           onClick={() => goTo("/")}
           className="text-sm font-bold tracking-[0.22em] uppercase text-white hover:text-white/70 transition-colors"
-          data-testid="nav-logo"
         >
           Chris Potter
         </button>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8 lg:gap-10">
-          <button
-            onClick={() => scrollTo("work")}
-            className="nav-link text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors duration-200"
-          >
-            Work
-          </button>
-          <button
-            onClick={() => scrollTo("about")}
-            className="nav-link text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors duration-200"
-          >
-            About
-          </button>
-          <button
-            onClick={() => scrollTo("gallery")}
-            className="nav-link text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors duration-200"
-          >
-            Gallery
-          </button>
-          <button
-            onClick={() => goTo("/fanbase")}
-            className={`nav-link text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 ${isActive("/fanbase") ? "text-white" : "text-white/50 hover:text-white"}`}
-          >
+        <nav className="hidden md:flex items-center gap-7 lg:gap-9">
+          {(["Work", "About", "Gallery"] as const).map(label => (
+            <button key={label}
+              onClick={() => scrollTo(label.toLowerCase())}
+              className="nav-link text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors duration-200">
+              {label}
+            </button>
+          ))}
+          <button onClick={() => goTo("/fanbase")}
+            className={`nav-link text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 ${isActive("/fanbase") ? "text-white" : "text-white/50 hover:text-white"}`}>
             Fanbase
           </button>
-          <button
-            onClick={() => goTo("/contact")}
-            className={`ml-2 px-5 py-2 border rounded text-[10px] tracking-[0.2em] uppercase transition-all duration-200 ${
+          <button onClick={() => goTo("/press-kit")}
+            className={`nav-link text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 ${isActive("/press-kit") ? "text-white" : "text-white/50 hover:text-white"}`}>
+            Press
+          </button>
+          <button onClick={() => goTo("/contact")}
+            className={`ml-1 px-5 py-2 border rounded text-[10px] tracking-[0.2em] uppercase transition-all duration-200 ${
               isActive("/contact")
                 ? "border-white/40 text-white bg-white/8"
                 : "border-white/15 text-white/55 hover:border-white/35 hover:text-white"
-            }`}
-            data-testid="nav-contact"
-          >
+            }`}>
             Contact
           </button>
         </nav>
 
         {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 flex flex-col gap-[5px]"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
+        <button className="md:hidden p-2 flex flex-col gap-[5px]" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
           <span className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
           <span className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
           <span className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
@@ -105,23 +86,15 @@ export default function NavBar({ alwaysDark = false }: NavBarProps) {
       </div>
 
       {/* Mobile drawer */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-72" : "max-h-0"}`}>
+      <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-80" : "max-h-0"}`}>
         <div className="px-6 pb-8 pt-2 bg-[#07090F]/98 border-b border-white/5 flex flex-col gap-5">
-          {(["Work", "About", "Gallery"] as const).map((label) => (
-            <button
-              key={label}
-              onClick={() => scrollTo(label.toLowerCase())}
-              className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left"
-            >
-              {label}
-            </button>
+          {["Work", "About", "Gallery"].map(label => (
+            <button key={label} onClick={() => scrollTo(label.toLowerCase())}
+              className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">{label}</button>
           ))}
-          <button onClick={() => goTo("/fanbase")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">
-            Fanbase
-          </button>
-          <button onClick={() => goTo("/contact")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">
-            Contact
-          </button>
+          <button onClick={() => goTo("/fanbase")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">Fanbase</button>
+          <button onClick={() => goTo("/press-kit")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">Press Kit</button>
+          <button onClick={() => goTo("/contact")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">Contact</button>
         </div>
       </div>
     </header>
