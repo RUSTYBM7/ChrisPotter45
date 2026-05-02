@@ -301,15 +301,16 @@ function PortalDashboard({ email, onSignOut }: { email: string; onSignOut: () =>
           <div className="absolute inset-0 bg-gradient-to-t from-[#07090F] via-[#07090F]/65 to-[#07090F]/40" />
         </div>
         <HeroSocialBar />
-        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pl-20 md:pl-24">
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full">
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-[10px] tracking-[0.24em] uppercase text-amber-400/50 mb-4">Fan Portal · Exclusive Access</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }}
             className="text-[clamp(3.5rem,9vw,7rem)] font-black uppercase leading-[0.88] text-white mb-4" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
             Welcome,<br />{displayName}.
           </motion.h1>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="flex items-center justify-between gap-4 flex-wrap">
-            <p className="text-xs text-white/35 tracking-wide">{email}</p>
-            <button onClick={onSignOut} className="text-[9px] tracking-[0.18em] uppercase text-white/25 hover:text-white/50 border border-white/10 hover:border-white/20 px-4 py-1.5 rounded transition-all">Sign Out</button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="flex items-center gap-4 flex-wrap mt-3">
+            <div className="w-6 h-px bg-white/20" />
+            <p className="text-xs text-white/30 tracking-wide">{email}</p>
+            <button onClick={onSignOut} className="text-[9px] tracking-[0.18em] uppercase text-white/22 hover:text-white/50 border border-white/8 hover:border-white/20 px-3 py-1.5 rounded transition-all ml-auto">Sign Out</button>
           </motion.div>
         </div>
       </section>
@@ -419,7 +420,7 @@ function LoginGate() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#07090F]/70 via-transparent to-transparent" />
         </div>
         <HeroSocialBar />
-        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32 pl-20 md:pl-24">
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-[10px] tracking-[0.24em] uppercase text-white/35 mb-5">Exclusive Access</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.9 }}
             className="text-[clamp(4rem,11vw,9rem)] font-black uppercase leading-[0.88] text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
