@@ -244,71 +244,206 @@ function SupportForm() {
 
 // ── Giving Methods ────────────────────────────────────────────────────────────
 function GivingMethods() {
+  const [method, setMethod] = useState<"card" | "paypal" | "btc" | "usdt">("card");
+  const [amount, setAmount] = useState<number | null>(50);
+  const [customAmt, setCustomAmt] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
+
   const copy = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
     setCopied(key);
-    setTimeout(() => setCopied(null), 2200);
+    setTimeout(() => setCopied(null), 2500);
   };
 
+  const displayAmt = amount ?? (Number(customAmt) || null);
+  const AMOUNTS = [25, 50, 100, 250, 500];
+  const METHODS = [
+    { id: "card" as const, label: "Card" },
+    { id: "paypal" as const, label: "PayPal" },
+    { id: "btc" as const, label: "Bitcoin" },
+    { id: "usdt" as const, label: "USDT" },
+  ];
+
+  const lockIcon = (
+    <svg className="w-3 h-3 text-green-400/75" fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+    </svg>
+  );
+
   return (
-    <div className="space-y-3">
-      <div className="border border-white/8 rounded-xl p-5 bg-white/[0.02] hover:border-white/14 transition-all">
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-amber-500/12 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-amber-400/80 font-black text-base leading-none">₿</span>
-            </div>
-            <div><p className="text-sm font-semibold text-white/80">Bitcoin</p><p className="text-[9px] tracking-wide text-white/28">BTC · Any amount</p></div>
-          </div>
-          <button onClick={() => copy(BTC_ADDRESS, "btc")} className={`text-[9px] tracking-widest uppercase px-3 py-1.5 rounded border transition-all ${copied === "btc" ? "border-green-500/30 text-green-400/70" : "border-white/10 text-white/30 hover:border-white/20 hover:text-white/55"}`}>
-            {copied === "btc" ? "✓ Copied" : "Copy"}
-          </button>
+    <div className="space-y-5">
+      {/* Amount selector */}
+      <div>
+        <p className="text-[9px] tracking-[0.22em] uppercase text-white/28 mb-3">Select Donation Amount (CAD)</p>
+        <div className="grid grid-cols-5 gap-2 mb-2.5">
+          {AMOUNTS.map(a => (
+            <button key={a} onClick={() => { setAmount(a); setCustomAmt(""); }}
+              className={`py-2.5 rounded-lg text-xs font-semibold transition-all ${
+                amount === a
+                  ? "bg-white text-[#07090F] shadow-md"
+                  : "bg-white/[0.04] border border-white/8 text-white/50 hover:bg-white/[0.08] hover:text-white/70"
+              }`}>
+              ${a}
+            </button>
+          ))}
         </div>
-        <div className="bg-white/[0.025] border border-white/6 rounded-lg px-3 py-2.5">
-          <p className="font-mono text-[10px] text-white/35 break-all leading-relaxed select-all">{BTC_ADDRESS}</p>
-        </div>
-      </div>
-
-      <div className="border border-white/8 rounded-xl p-5 bg-white/[0.02] hover:border-white/14 transition-all">
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/18 flex items-center justify-center flex-shrink-0">
-              <span className="text-emerald-400/75 font-black text-sm leading-none">₮</span>
-            </div>
-            <div><p className="text-sm font-semibold text-white/80">USDT Tether</p><p className="text-[9px] tracking-wide text-white/28">TRC-20 · TRON Network</p></div>
-          </div>
-          <button onClick={() => copy(USDT_TRC20, "usdt")} className={`text-[9px] tracking-widest uppercase px-3 py-1.5 rounded border transition-all ${copied === "usdt" ? "border-green-500/30 text-green-400/70" : "border-white/10 text-white/30 hover:border-white/20 hover:text-white/55"}`}>
-            {copied === "usdt" ? "✓ Copied" : "Copy"}
-          </button>
-        </div>
-        <div className="bg-white/[0.025] border border-white/6 rounded-lg px-3 py-2.5">
-          <p className="font-mono text-[10px] text-white/35 break-all leading-relaxed select-all">{USDT_TRC20}</p>
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-sm font-medium">$</span>
+          <input type="number" min="1" placeholder="Custom amount" value={customAmt}
+            onChange={e => { setCustomAmt(e.target.value); setAmount(null); }}
+            className="w-full bg-white/[0.03] border border-white/8 rounded-lg pl-8 pr-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/22 transition-colors" />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <a href={STRIPE_URL} target="_blank" rel="noopener noreferrer" className="group border border-white/8 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-white/22 hover:bg-white/[0.03] transition-all text-center">
-          <div className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/18 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none">
-              <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-indigo-400/70" />
-              <path d="M2 10h20" stroke="currentColor" strokeWidth="1.5" className="text-indigo-400/70" />
-            </svg>
-          </div>
-          <div><p className="text-xs font-semibold text-white/75 mb-0.5">Donate by Card</p><p className="text-[9px] text-white/28">Visa · Mastercard · Amex</p></div>
-          <span className="text-[8px] tracking-widest uppercase text-white/22 group-hover:text-white/50 transition-colors mt-auto">Donate via Stripe →</span>
-        </a>
-        <a href={PAYPAL_URL} target="_blank" rel="noopener noreferrer" className="group border border-white/8 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-white/22 hover:bg-white/[0.03] transition-all text-center">
-          <div className="w-9 h-9 rounded-full bg-blue-500/10 border border-blue-500/18 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 text-blue-400/70" fill="currentColor">
-              <path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.79A.774.774 0 015.706 2h7.422c2.29 0 3.974.53 5.002 1.574.97.988 1.26 2.29.879 3.969l-.113.449C18.232 10.73 15.96 12 12.83 12H10.13c-.558 0-1.04.406-1.13.957l-.852 5.396-.134.84-.938 2.144z" />
-            </svg>
-          </div>
-          <div><p className="text-xs font-semibold text-white/75 mb-0.5">PayPal</p><p className="text-[9px] text-white/28">Quick & secure</p></div>
-          <span className="text-[8px] tracking-widest uppercase text-white/22 group-hover:text-white/50 transition-colors mt-auto">Donate via PayPal →</span>
-        </a>
+      {/* Method tabs */}
+      <div className="bg-white/[0.025] border border-white/6 rounded-xl p-1 grid grid-cols-4 gap-1">
+        {METHODS.map(m => (
+          <button key={m.id} onClick={() => setMethod(m.id)}
+            className={`py-2.5 rounded-lg text-[10px] tracking-wide font-medium transition-all ${
+              method === m.id ? "bg-white text-[#07090F] shadow-sm" : "text-white/35 hover:text-white/60"
+            }`}>
+            {m.label}
+          </button>
+        ))}
       </div>
-      <p className="text-[10px] text-white/18 leading-relaxed pt-1">For tax receipts or major gift discussions, contact <span className="text-white/30">support@chrispotterofficial.site</span></p>
+
+      {/* Card / Stripe */}
+      {method === "card" && (
+        <div className="border border-white/8 rounded-xl overflow-hidden bg-white/[0.015]">
+          <div className="px-6 py-4 border-b border-white/6 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="h-5 px-2 bg-[#1A1F71] rounded-sm flex items-center">
+                <span className="text-white font-black text-[9px] italic tracking-tight">VISA</span>
+              </div>
+              <div className="flex items-center">
+                <span className="w-5 h-5 rounded-full bg-[#EB001B] opacity-85 block" />
+                <span className="w-5 h-5 rounded-full bg-[#F79E1B] opacity-85 -ml-2 block" />
+              </div>
+              <div className="h-5 px-2 bg-[#2E77BC]/50 rounded-sm flex items-center">
+                <span className="text-white font-black text-[8px] tracking-tighter">AMEX</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {lockIcon}
+              <span className="text-[9px] text-green-400/60 tracking-wide">256-bit SSL</span>
+            </div>
+          </div>
+          <div className="p-6">
+            <a href={STRIPE_URL} target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2.5 w-full py-4 rounded-xl font-bold text-white text-sm tracking-wide transition-all hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, #635BFF 0%, #8B83FF 100%)", boxShadow: "0 8px 24px rgba(99,91,255,0.28)" }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              {displayAmt ? `Donate $${displayAmt} CAD` : "Donate by Card"}
+            </a>
+            <p className="text-center text-[9px] text-white/20 mt-3 tracking-wide">Powered by <span className="text-white/35 font-medium">Stripe</span> · Secure checkout · Instant receipt</p>
+          </div>
+        </div>
+      )}
+
+      {/* PayPal */}
+      {method === "paypal" && (
+        <div className="border border-white/8 rounded-xl overflow-hidden bg-white/[0.015]">
+          <div className="px-6 py-4 border-b border-white/6 flex items-center justify-between">
+            <div className="flex items-center gap-0.5">
+              <span className="text-[#003087] font-black text-base bg-white rounded-l px-2 py-1 leading-none" style={{ fontFamily: "Arial, sans-serif" }}>Pay</span>
+              <span className="text-[#009cde] font-black text-base bg-white rounded-r px-2 py-1 leading-none" style={{ fontFamily: "Arial, sans-serif" }}>Pal</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <svg className="w-3 h-3 text-green-400/75" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-[9px] text-green-400/60 tracking-wide">Buyer Protected</span>
+            </div>
+          </div>
+          <div className="p-6">
+            <a href={PAYPAL_URL} target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2.5 w-full py-4 rounded-xl font-bold text-[#003087] text-sm tracking-wide transition-all hover:opacity-90"
+              style={{ background: "#FFB931", boxShadow: "0 8px 24px rgba(255,185,49,0.25)" }}>
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill="#003087">
+                <path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.79A.774.774 0 015.706 2h7.422c2.29 0 3.974.53 5.002 1.574.97.988 1.26 2.29.879 3.969l-.113.449C18.232 10.73 15.96 12 12.83 12H10.13c-.558 0-1.04.406-1.13.957l-.852 5.396-.134.84-.938 2.144z" />
+              </svg>
+              {displayAmt ? `Donate $${displayAmt} with PayPal` : "Donate with PayPal"}
+            </a>
+            <p className="text-center text-[9px] text-white/20 mt-3 tracking-wide">Redirects to PayPal · All currencies · Instant confirmation</p>
+          </div>
+        </div>
+      )}
+
+      {/* Bitcoin */}
+      {method === "btc" && (
+        <div className="border border-amber-500/18 rounded-xl overflow-hidden" style={{ background: "rgba(245,158,11,0.025)" }}>
+          <div className="px-6 py-4 border-b border-amber-500/12 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                <span className="text-amber-400 font-black text-base leading-none">₿</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white/85">Bitcoin</p>
+                <p className="text-[9px] text-amber-400/50 tracking-wide">BTC · Any amount · Mainnet</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400/70 block" />
+              <span className="text-[9px] text-green-400/55 tracking-wide">Network active</span>
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/28 mb-2.5">Wallet Address</p>
+            <div className="bg-[#030508] border border-white/8 rounded-xl p-4 mb-4">
+              <p className="font-mono text-[11px] text-white/50 break-all leading-relaxed select-all mb-3">{BTC_ADDRESS}</p>
+              <button onClick={() => copy(BTC_ADDRESS, "btc")}
+                className={`w-full py-2.5 rounded-lg text-[10px] tracking-widest uppercase font-medium transition-all border ${
+                  copied === "btc"
+                    ? "border-green-500/30 bg-green-500/10 text-green-400"
+                    : "border-amber-500/22 bg-amber-500/8 text-amber-400/70 hover:bg-amber-500/15 hover:text-amber-400"
+                }`}>
+                {copied === "btc" ? "✓ Address Copied" : "Copy Wallet Address"}
+              </button>
+            </div>
+            <p className="text-[10px] text-white/20 leading-relaxed">For a tax receipt on donations of $50 CAD or more, email <span className="text-white/32">support@chrispotterofficial.site</span> with your transaction ID.</p>
+          </div>
+        </div>
+      )}
+
+      {/* USDT */}
+      {method === "usdt" && (
+        <div className="border border-emerald-500/18 rounded-xl overflow-hidden" style={{ background: "rgba(16,185,129,0.025)" }}>
+          <div className="px-6 py-4 border-b border-emerald-500/12 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/18 border border-emerald-500/28 flex items-center justify-center">
+                <span className="text-emerald-400 font-black text-sm leading-none">₮</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white/85">USDT Tether</p>
+                <p className="text-[9px] text-emerald-400/50 tracking-wide">TRC-20 · TRON Network · Stablecoin</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400/70 block" />
+              <span className="text-[9px] text-green-400/55 tracking-wide">1 USDT ≈ 1 USD</span>
+            </div>
+          </div>
+          <div className="p-6">
+            <p className="text-[9px] tracking-[0.2em] uppercase text-white/28 mb-2.5">Wallet Address · TRC-20 Only</p>
+            <div className="bg-[#030508] border border-white/8 rounded-xl p-4 mb-4">
+              <p className="font-mono text-[11px] text-white/50 break-all leading-relaxed select-all mb-3">{USDT_TRC20}</p>
+              <button onClick={() => copy(USDT_TRC20, "usdt")}
+                className={`w-full py-2.5 rounded-lg text-[10px] tracking-widest uppercase font-medium transition-all border ${
+                  copied === "usdt"
+                    ? "border-green-500/30 bg-green-500/10 text-green-400"
+                    : "border-emerald-500/22 bg-emerald-500/8 text-emerald-400/70 hover:bg-emerald-500/15 hover:text-emerald-400"
+                }`}>
+                {copied === "usdt" ? "✓ Address Copied" : "Copy Wallet Address"}
+              </button>
+            </div>
+            <p className="text-[10px] text-white/20 leading-relaxed">Send USDT on the <span className="text-white/35 font-medium">TRC-20 (TRON) network only</span>. Other networks (ERC-20, BEP-20) will result in permanent loss of funds.</p>
+          </div>
+        </div>
+      )}
+
+      <p className="text-[10px] text-white/15 leading-relaxed pt-1">All methods are secure. For major gifts, corporate partnerships, or tax receipt queries: <span className="text-white/25">support@chrispotterofficial.site</span></p>
     </div>
   );
 }

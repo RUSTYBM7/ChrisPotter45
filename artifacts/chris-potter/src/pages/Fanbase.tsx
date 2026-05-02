@@ -293,7 +293,7 @@ export default function Fanbase() {
           <div className="grid md:grid-cols-12 gap-12 items-center">
             <div className="md:col-span-6">
               <Reveal>
-                <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-5">Supporters Hub</p>
+                <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-5">Fans Membership Hub</p>
                 <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-black uppercase leading-[0.88] text-white mb-8" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                   More Than<br />a Fan Page
                 </h2>
@@ -465,7 +465,7 @@ export default function Fanbase() {
       <section id="badges" className="py-24 md:py-36 bg-[#05070D]">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <Reveal>
-            <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">Supporter Badges</p>
+            <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">Fans Membership Badges</p>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-16">
               <h2 className="text-[clamp(3rem,6vw,5.5rem)] font-black uppercase leading-[0.88] text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                 Show Your<br />Support

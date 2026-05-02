@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-type AdminTab = "overview" | "subscribers" | "badge" | "inquiries" | "compose" | "vip" | "reports" | "settings";
+type AdminTab = "overview" | "subscribers" | "badge" | "inquiries" | "compose" | "vip" | "events" | "reports" | "settings";
 interface Subscriber { email: string; name?: string; phone?: string; subscribedAt: string; tags?: string[]; preferences?: Record<string, unknown>; notes?: string; }
-interface Contact { id: string; type: "management" | "fanbase"; status: "pending" | "read" | "responded" | "archived"; firstName: string; lastName: string; email: string; receivedAt: string; data: Record<string, string>; notes?: string; badgeTier?: string; }
+interface Contact { id: string; type: "management" | "fanbase" | "event"; status: "pending" | "read" | "responded" | "archived"; firstName: string; lastName: string; email: string; receivedAt: string; data: Record<string, string>; notes?: string; badgeTier?: string; }
 interface VIPRequest { id: string; email: string; name: string; sessionType: string; message: string; availability?: string; requestedAt: string; status: "pending" | "approved" | "scheduled" | "completed" | "declined"; scheduledDate?: string; notes?: string; }
 interface Stats { subscribers: number; newThisWeek: number; totalContacts: number; pendingContacts: number; vipRequests: number; pendingVip: number; managementInquiries: number; badgeApplications: number; }
 
@@ -432,6 +432,139 @@ function VIPSessions({ token }: { token: string }) {
   );
 }
 
+function EventRegistrations({ token }: { token: string }) {
+  const [data, setData] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    api.contacts(token).then(r => {
+      setData((r.data ?? []).filter((c: Contact) => c.type === "event"));
+      setLoading(false);
+    });
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = data.filter(c => JSON.stringify(c).toLowerCase().includes(search.toLowerCase()));
+
+  const byEvent: Record<string, Contact[]> = {};
+  filtered.forEach(c => {
+    const name = c.data?.eventName ?? "Unknown Event";
+    if (!byEvent[name]) byEvent[name] = [];
+    byEvent[name].push(c);
+  });
+
+  const updateStatus = async (id: string, status: string) => {
+    setSaving(id);
+    await api.updateContact(token, { id, status, notes: notes[id] ?? "" });
+    setSaving(null); load();
+  };
+
+  const totalParty = filtered.reduce((sum, c) => sum + (Number(c.data?.partySize) || 1), 0);
+
+  return (
+    <div className="p-8 max-w-[1200px]">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-black uppercase text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+          Event Registrations <span className="text-white/30 text-lg">({data.length})</span>
+        </h2>
+        <div className="flex gap-3 items-center">
+          <div className="border border-white/6 rounded-xl px-4 py-2.5 text-center">
+            <p className="text-[8px] tracking-widest uppercase text-white/25">Total Attendees</p>
+            <p className="text-xl font-black text-white">{totalParty}</p>
+          </div>
+          <div className="border border-white/6 rounded-xl px-4 py-2.5 text-center">
+            <p className="text-[8px] tracking-widests uppercase text-white/25">Events</p>
+            <p className="text-xl font-black text-white">{Object.keys(byEvent).length}</p>
+          </div>
+        </div>
+      </div>
+
+      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email, or event..."
+        className="w-full bg-white/[0.03] border border-white/8 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 mb-7" />
+
+      {loading ? <div className="flex justify-center py-16"><Spinner /></div> : !data.length ? <Empty message="No event registrations yet" /> : (
+        <div className="space-y-8">
+          {Object.entries(byEvent).map(([eventName, regs]) => {
+            const totalGuests = regs.reduce((s, c) => s + (Number(c.data?.partySize) || 1), 0);
+            return (
+              <div key={eventName}>
+                <div className="flex items-center gap-3 mb-3">
+                  <h3 className="text-sm font-bold text-white/80">{eventName}</h3>
+                  <span className="text-[9px] tracking-widests uppercase text-amber-400/65 border border-amber-500/20 px-2 py-0.5 rounded-full">{regs.length} registrants · {totalGuests} guests</span>
+                  {regs[0]?.data?.eventDate && <span className="text-[9px] text-white/22 ml-auto">{regs[0].data.eventDate}</span>}
+                </div>
+                <div className="border border-white/6 rounded-xl overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/6 bg-white/[0.02]">
+                        {["Name", "Email", "Party", "Phone", "Message", "Registered", "Status"].map(h => (
+                          <th key={h} className="text-left py-3 px-4 text-[9px] tracking-widests uppercase text-white/22 font-normal">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {regs.map(c => (
+                        <>
+                          <tr key={c.id} className="border-b border-white/[0.04] hover:bg-white/[0.015] transition-colors cursor-pointer" onClick={() => setExpanded(expanded === c.id ? null : c.id)}>
+                            <td className="py-3 px-4 text-white/75 font-medium">{c.firstName} {c.lastName}</td>
+                            <td className="py-3 px-4 text-white/45 text-xs">{c.email}</td>
+                            <td className="py-3 px-4">
+                              <span className="text-white/70 font-bold">{c.data?.partySize || "1"}</span>
+                              <span className="text-white/25 text-xs"> guests</span>
+                            </td>
+                            <td className="py-3 px-4 text-white/30 text-xs">{c.data?.phone || "—"}</td>
+                            <td className="py-3 px-4 text-white/30 text-xs max-w-[160px] truncate">{c.data?.message || "—"}</td>
+                            <td className="py-3 px-4 text-white/28 text-xs">{new Date(c.receivedAt).toLocaleDateString()}</td>
+                            <td className="py-3 px-4"><StatusBadge status={c.status} /></td>
+                          </tr>
+                          {expanded === c.id && (
+                            <tr className="bg-white/[0.01] border-b border-white/4">
+                              <td colSpan={7} className="px-6 py-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    {Object.entries(c.data).filter(([k]) => !["firstName","lastName"].includes(k) && c.data[k]).map(([k, v]) => (
+                                      <div key={k} className="flex gap-3">
+                                        <span className="text-[9px] uppercase text-white/22 w-24 flex-shrink-0 pt-0.5">{k.replace(/([A-Z])/g, " $1")}</span>
+                                        <span className="text-xs text-white/55 break-all">{v}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div className="space-y-3">
+                                    <div>
+                                      <label className="block text-[9px] tracking-widests uppercase text-white/22 mb-1.5">Internal Notes</label>
+                                      <textarea value={notes[c.id] ?? c.notes ?? ""} onChange={e => setNotes({ ...notes, [c.id]: e.target.value })} rows={2}
+                                        className="w-full bg-white/[0.03] border border-white/8 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/18 resize-none" />
+                                    </div>
+                                    <div className="flex gap-2 flex-wrap">
+                                      {["pending","read","responded","archived"].map(s => (
+                                        <button key={s} onClick={() => updateStatus(c.id, s)} disabled={saving === c.id || c.status === s}
+                                          className={`text-[9px] tracking-widests uppercase px-3 py-1.5 rounded border transition-all disabled:opacity-40 ${c.status === s ? "border-white/25 text-white/60 bg-white/5" : "border-white/8 text-white/25 hover:text-white/50 hover:border-white/18"}`}>{s}</button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Reports({ stats }: { stats: Stats | null }) {
   const bars = [
     { label: "Subscribers", value: stats?.subscribers ?? 0, color: "bg-white/40" },
@@ -548,6 +681,7 @@ const NAV: { id: AdminTab; label: string; icon: string }[] = [
   { id: "inquiries", label: "Inquiries", icon: "◎" },
   { id: "compose", label: "Compose", icon: "✉" },
   { id: "vip", label: "VIP Sessions", icon: "★" },
+  { id: "events", label: "Events", icon: "◆" },
   { id: "reports", label: "Reports", icon: "▦" },
   { id: "settings", label: "Settings", icon: "⚙" },
 ];
@@ -605,6 +739,7 @@ export default function Admin() {
             {tab === "inquiries" && <Contacts token={token} type="management" />}
             {tab === "compose" && <Compose token={token} />}
             {tab === "vip" && <VIPSessions token={token} />}
+            {tab === "events" && <EventRegistrations token={token} />}
             {tab === "reports" && <Reports stats={stats} />}
             {tab === "settings" && <Settings />}
           </motion.div>

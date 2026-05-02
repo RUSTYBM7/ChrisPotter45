@@ -407,21 +407,8 @@ function NewsletterSection() {
 }
 
 // ── FUNDRAISING SECTION ──────────────────────────────────────────────────────
-// ⚠️  Replace these with real wallet addresses and payment links before publishing
-const BTC_ADDRESS  = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
-const USDT_TRC20   = "TGCRkw1Vq759FBCrwxkZGgqZiqrSdpHysD";
-const STRIPE_URL   = "https://donate.stripe.com/00000000";    // Replace with your Stripe donation link
-const PAYPAL_URL   = "https://paypal.me/heartlandlegacyfund"; // Replace with your PayPal link
-
 function FundraisingSection() {
-  const [copied, setCopied] = useState<string | null>(null);
   const [, navigate] = useLocation();
-
-  const copy = async (text: string, key: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 2200);
-  };
 
   return (
     <section id="give-back" className="py-24 md:py-36">
@@ -470,95 +457,31 @@ function FundraisingSection() {
             </Reveal>
           </div>
 
-          {/* Right — payment options */}
+          {/* Right — giving summary + CTA */}
           <div>
             <Reveal delay={120}>
-              <p className="text-[10px] tracking-[0.24em] uppercase text-white/28 mb-5">Choose How to Give</p>
-              <div className="space-y-3">
-
-                {/* Bitcoin — tap anywhere on card → /charity, copy button stops propagation */}
-                <div onClick={() => navigate("/charity")} className="border border-white/8 rounded-xl p-5 bg-white/[0.02] hover:border-white/22 hover:bg-white/[0.035] transition-all cursor-pointer group">
-                  <div className="flex items-center justify-between mb-3.5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-amber-500/12 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-amber-400/80 font-black text-base leading-none">₿</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white/80">Bitcoin</p>
-                        <p className="text-[9px] tracking-wide text-white/28">BTC · Any amount</p>
-                      </div>
-                    </div>
-                    <button onClick={e => { e.stopPropagation(); copy(BTC_ADDRESS, "btc"); }}
-                      className={`text-[9px] tracking-widest uppercase px-3 py-1.5 rounded border transition-all ${copied === "btc" ? "border-green-500/30 text-green-400/70" : "border-white/10 text-white/30 hover:border-white/20 hover:text-white/55"}`}>
-                      {copied === "btc" ? "✓ Copied" : "Copy"}
-                    </button>
-                  </div>
-                  <div className="bg-white/[0.025] border border-white/6 rounded-lg px-3 py-2.5">
-                    <p className="font-mono text-[10px] text-white/35 break-all leading-relaxed select-all">{BTC_ADDRESS}</p>
-                  </div>
-                  <p className="text-[8px] tracking-widest uppercase text-white/18 group-hover:text-white/35 transition-colors mt-2.5">Tap for full giving options →</p>
-                </div>
-
-                {/* USDT TRC-20 — tap anywhere on card → /charity */}
-                <div onClick={() => navigate("/charity")} className="border border-white/8 rounded-xl p-5 bg-white/[0.02] hover:border-white/22 hover:bg-white/[0.035] transition-all cursor-pointer group">
-                  <div className="flex items-center justify-between mb-3.5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/18 flex items-center justify-center flex-shrink-0">
-                        <span className="text-emerald-400/75 font-black text-sm leading-none">₮</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white/80">USDT Tether</p>
-                        <p className="text-[9px] tracking-wide text-white/28">TRC-20 · TRON Network</p>
-                      </div>
-                    </div>
-                    <button onClick={e => { e.stopPropagation(); copy(USDT_TRC20, "usdt"); }}
-                      className={`text-[9px] tracking-widests uppercase px-3 py-1.5 rounded border transition-all ${copied === "usdt" ? "border-green-500/30 text-green-400/70" : "border-white/10 text-white/30 hover:border-white/20 hover:text-white/55"}`}>
-                      {copied === "usdt" ? "✓ Copied" : "Copy"}
-                    </button>
-                  </div>
-                  <div className="bg-white/[0.025] border border-white/6 rounded-lg px-3 py-2.5">
-                    <p className="font-mono text-[10px] text-white/35 break-all leading-relaxed select-all">{USDT_TRC20}</p>
-                  </div>
-                  <p className="text-[8px] tracking-widest uppercase text-white/18 group-hover:text-white/35 transition-colors mt-2.5">Tap for full giving options →</p>
-                </div>
-
-                {/* Stripe + PayPal — tap to go to full foundation page */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => navigate("/charity")}
-                    className="group border border-white/8 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-white/22 hover:bg-white/[0.03] transition-all text-center cursor-pointer">
-                    <div className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/18 flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none">
-                        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-indigo-400/70" />
-                        <path d="M2 10h20" stroke="currentColor" strokeWidth="1.5" className="text-indigo-400/70" />
-                      </svg>
-                    </div>
+              <p className="text-[10px] tracking-[0.24em] uppercase text-white/28 mb-5">Ways to Give</p>
+              <div className="space-y-2 mb-8">
+                {[
+                  { symbol: "◈", label: "Credit & Debit Card", sub: "Visa · Mastercard · Amex · Secure Stripe Checkout", color: "text-indigo-400/55" },
+                  { symbol: "◎", label: "PayPal", sub: "Quick, secure, buyer-protected donations", color: "text-blue-400/55" },
+                  { symbol: "₿", label: "Bitcoin", sub: "BTC · Any amount · On-chain mainnet wallet", color: "text-amber-400/55" },
+                  { symbol: "₮", label: "USDT Tether", sub: "TRC-20 · TRON network · Stablecoin giving", color: "text-emerald-400/55" },
+                ].map((m, i) => (
+                  <div key={i} className="flex items-center gap-4 border border-white/5 rounded-xl px-5 py-4 bg-white/[0.012]">
+                    <span className={`text-xl w-6 text-center flex-shrink-0 font-black leading-none ${m.color}`}>{m.symbol}</span>
                     <div>
-                      <p className="text-xs font-semibold text-white/75 mb-0.5">Donate by Card</p>
-                      <p className="text-[9px] text-white/28">Visa · Mastercard</p>
+                      <p className="text-sm font-medium text-white/75">{m.label}</p>
+                      <p className="text-[10px] text-white/28 mt-0.5">{m.sub}</p>
                     </div>
-                    <span className="text-[8px] tracking-widest uppercase text-white/20 group-hover:text-white/50 transition-colors mt-auto">View Foundation →</span>
-                  </button>
-                  <button onClick={() => navigate("/charity")}
-                    className="group border border-white/8 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-white/22 hover:bg-white/[0.03] transition-all text-center cursor-pointer">
-                    <div className="w-9 h-9 rounded-full bg-blue-500/10 border border-blue-500/18 flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" className="w-4 h-4 text-blue-400/70" fill="currentColor">
-                        <path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.79A.774.774 0 015.706 2h7.422c2.29 0 3.974.53 5.002 1.574.97.988 1.26 2.29.879 3.969l-.113.449C18.232 10.73 15.96 12 12.83 12H10.13c-.558 0-1.04.406-1.13.957l-.852 5.396-.134.84-.938 2.144z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-white/75 mb-0.5">PayPal</p>
-                      <p className="text-[9px] text-white/28">Quick & secure</p>
-                    </div>
-                    <span className="text-[8px] tracking-widest uppercase text-white/20 group-hover:text-white/50 transition-colors mt-auto">View Foundation →</span>
-                  </button>
-                </div>
+                  </div>
+                ))}
               </div>
-
-              {/* Primary CTA to full foundation page */}
               <button onClick={() => navigate("/charity")}
-                className="mt-5 w-full py-3.5 border border-white/12 hover:border-white/28 hover:bg-white/[0.03] text-[10px] tracking-[0.2em] uppercase text-white/40 hover:text-white/70 rounded-lg transition-all">
-                Full Foundation Story & All Giving Options →
+                className="w-full py-4 bg-white text-[#07090F] text-[11px] tracking-[0.22em] uppercase font-bold rounded-xl hover:bg-white/88 transition-colors shadow-lg shadow-white/5">
+                Give to the Heartland Legacy Fund
               </button>
+              <p className="text-[10px] text-white/18 text-center mt-3">Full foundation story · all giving methods · 2025 events</p>
             </Reveal>
           </div>
 
