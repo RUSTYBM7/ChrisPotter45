@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import HeroSocialBar from "@/components/shared/HeroSocialBar";
 
 interface PageHeroProps {
   photo: string;
@@ -22,7 +23,6 @@ export default function PageHero({
       className={`relative flex flex-col justify-end ${compact ? "min-h-[60vh]" : "min-h-screen"} pb-14 md:pb-20`}
       data-testid="page-hero"
     >
-      {/* Background image */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.img
           src={photo}
@@ -37,7 +37,9 @@ export default function PageHero({
         <div className="absolute inset-0 bg-gradient-to-r from-[#07090F]/70 via-transparent to-transparent" />
       </div>
 
-      <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
+      <HeroSocialBar />
+
+      <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32 pl-20 md:pl-24">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

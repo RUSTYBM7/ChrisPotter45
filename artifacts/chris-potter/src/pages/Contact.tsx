@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import NavBar from "@/components/shared/NavBar";
 import Footer from "@/components/shared/Footer";
-import SocialSidebar from "@/components/shared/SocialSidebar";
 import PageHero from "@/components/shared/PageHero";
 
 function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -72,9 +71,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-[#07090F] text-white overflow-x-hidden">
       <NavBar alwaysDark />
-      <SocialSidebar />
 
-      {/* HERO */}
       <PageHero
         photo="/photos/IMG_0982.JPG"
         photoPosition="center top"
@@ -104,21 +101,15 @@ export default function Contact() {
       <section className="py-24 md:py-36">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <div className="grid md:grid-cols-12 gap-16 md:gap-24">
-
-            {/* Left: info */}
             <div className="md:col-span-4">
               <Reveal>
                 <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-5">Management Inquiry</p>
-                <h2
-                  className="text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.88] text-white mb-8"
-                  style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                >
+                <h2 className="text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.88] text-white mb-8" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
                   Get in<br />Touch
                 </h2>
                 <p className="text-base text-white/45 font-light leading-relaxed mb-10">
                   All inquiries are reviewed by Chris Potter's management team. Please provide as much detail as possible to help us respond efficiently.
                 </p>
-
                 <div className="space-y-6 mb-14">
                   {[
                     { title: "Casting — Film & Television", desc: "Feature films, limited series, TV movies, guest roles" },
@@ -136,79 +127,60 @@ export default function Contact() {
                     </div>
                   ))}
                 </div>
-
                 <div className="rounded-lg overflow-hidden aspect-[4/3]">
                   <img src="/photos/IMG_0984.JPG" alt="Chris Potter" className="w-full h-full object-cover" />
                 </div>
               </Reveal>
             </div>
 
-            {/* Right: form */}
             <div className="md:col-span-8">
               <Reveal delay={150}>
                 {status === "success" ? (
                   <div className="border border-white/15 rounded-2xl p-12 text-center bg-white/[0.02]">
-                    <h3
-                      className="text-5xl font-black uppercase mb-4 text-white"
-                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                    >
-                      Received.
-                    </h3>
+                    <h3 className="text-5xl font-black uppercase mb-4 text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Received.</h3>
                     <p className="text-base text-white/50">{msg}</p>
                   </div>
                 ) : (
                   <form onSubmit={submit} className="space-y-6">
-
-                    {/* Personal */}
                     <div className="grid grid-cols-2 gap-4">
                       <div><label className={lbl}>First Name *</label><input required type="text" value={form.firstName} onChange={set("firstName")} placeholder="Jane" className={inp} /></div>
                       <div><label className={lbl}>Last Name *</label><input required type="text" value={form.lastName} onChange={set("lastName")} placeholder="Smith" className={inp} /></div>
                     </div>
-
                     <div className="grid grid-cols-2 gap-4">
                       <div><label className={lbl}>Email Address *</label><input required type="email" value={form.email} onChange={set("email")} placeholder="jane@studio.com" className={inp} /></div>
                       <div><label className={lbl}>Phone Number</label><input type="tel" value={form.phone} onChange={set("phone")} placeholder="+1 (555) 000-0000" className={inp} /></div>
                     </div>
-
-                    {/* Professional */}
                     <div className="grid grid-cols-2 gap-4">
                       <div><label className={lbl}>Company / Organization</label><input type="text" value={form.company} onChange={set("company")} placeholder="Production company" className={inp} /></div>
                       <div><label className={lbl}>Your Title / Role</label><input type="text" value={form.jobTitle} onChange={set("jobTitle")} placeholder="Casting Director" className={inp} /></div>
                     </div>
-
-                    {/* Address */}
                     <div><label className={lbl}>Street Address</label><input type="text" value={form.address} onChange={set("address")} placeholder="123 Studio Lot, Suite 100" className={inp} /></div>
                     <div className="grid grid-cols-2 gap-4">
                       <div><label className={lbl}>City</label><input type="text" value={form.city} onChange={set("city")} placeholder="Los Angeles" className={inp} /></div>
                       <div><label className={lbl}>Country</label><input type="text" value={form.country} onChange={set("country")} placeholder="United States" className={inp} /></div>
                     </div>
-
-                    {/* Reason */}
                     <div>
                       <label className={lbl}>Reason for Contact *</label>
                       <select required value={form.reason} onChange={set("reason")} className={sel}>
                         <option value="">Select inquiry type</option>
-                        <option value="Casting — Feature Film">Casting — Feature Film</option>
-                        <option value="Casting — Television Series">Casting — Television Series</option>
-                        <option value="Casting — TV Movie">Casting — TV Movie</option>
-                        <option value="Directing Opportunity">Directing Opportunity</option>
-                        <option value="Producing / Co-Production">Producing / Co-Production</option>
-                        <option value="Speaking Engagement">Speaking Engagement</option>
-                        <option value="Public Appearance">Public Appearance</option>
-                        <option value="Press / Media Interview">Press / Media Interview</option>
-                        <option value="Podcast / Editorial Feature">Podcast / Editorial Feature</option>
-                        <option value="Business / Licensing">Business / Licensing</option>
-                        <option value="Legal / Rights">Legal / Rights</option>
-                        <option value="Other">Other</option>
+                        <option>Casting — Feature Film</option>
+                        <option>Casting — Television Series</option>
+                        <option>Casting — TV Movie</option>
+                        <option>Directing Opportunity</option>
+                        <option>Producing / Co-Production</option>
+                        <option>Speaking Engagement</option>
+                        <option>Public Appearance</option>
+                        <option>Press / Media Interview</option>
+                        <option>Podcast / Editorial Feature</option>
+                        <option>Business / Licensing</option>
+                        <option>Legal / Rights</option>
+                        <option>Other</option>
                       </select>
                     </div>
-
-                    {/* Project details */}
                     <div>
                       <label className={lbl}>Project Details</label>
                       <textarea rows={4} value={form.projectDetails} onChange={set("projectDetails")} placeholder="Describe your project, role, script, or opportunity..." className={inp + " resize-none"} />
                     </div>
-
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={lbl}>Timeline / Urgency</label>
@@ -232,7 +204,6 @@ export default function Contact() {
                         </select>
                       </div>
                     </div>
-
                     <div>
                       <label className={lbl}>How Did You Hear About Chris Potter?</label>
                       <select value={form.howHeard} onChange={set("howHeard")} className={sel}>
@@ -246,40 +217,22 @@ export default function Contact() {
                         <option>Other</option>
                       </select>
                     </div>
-
                     <div>
                       <label className={lbl}>Additional Message</label>
                       <textarea rows={5} value={form.message} onChange={set("message")} placeholder="Any additional context, requirements, or questions..." className={inp + " resize-none"} />
                     </div>
-
-                    {/* Terms */}
                     <label className="flex items-start gap-3 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={form.agreeTerms}
-                        onChange={set("agreeTerms")}
-                        className="mt-0.5 w-4 h-4 flex-shrink-0 accent-white"
-                      />
+                      <input type="checkbox" checked={form.agreeTerms} onChange={set("agreeTerms")} className="mt-0.5 w-4 h-4 flex-shrink-0 accent-white" />
                       <span className="text-xs text-white/35 leading-relaxed group-hover:text-white/50 transition-colors">
                         I confirm this is a professional inquiry and agree that my information will be used solely to process and respond to this request by Chris Potter's management team.
                       </span>
                     </label>
-
-                    {status === "error" && (
-                      <p className="text-red-400/70 text-sm">{msg}</p>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={status === "loading"}
-                      className="w-full py-4 bg-white text-[#07090F] text-[10px] tracking-[0.22em] uppercase font-bold rounded-lg hover:bg-white/88 active:bg-white/75 transition-colors disabled:opacity-50"
-                    >
+                    {status === "error" && <p className="text-red-400/70 text-sm">{msg}</p>}
+                    <button type="submit" disabled={status === "loading"}
+                      className="w-full py-4 bg-white text-[#07090F] text-[10px] tracking-[0.22em] uppercase font-bold rounded-lg hover:bg-white/88 active:bg-white/75 transition-colors disabled:opacity-50">
                       {status === "loading" ? "Submitting..." : "Submit Inquiry"}
                     </button>
-
-                    <p className="text-[10px] text-white/18 text-center">
-                      All submissions are reviewed by management within 3–5 business days.
-                    </p>
+                    <p className="text-[10px] text-white/18 text-center">All submissions are reviewed by management within 3–5 business days.</p>
                   </form>
                 )}
               </Reveal>
