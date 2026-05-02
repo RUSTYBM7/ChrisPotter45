@@ -415,6 +415,7 @@ const PAYPAL_URL   = "https://paypal.me/heartlandlegacyfund"; // Replace with yo
 
 function FundraisingSection() {
   const [copied, setCopied] = useState<string | null>(null);
+  const [, navigate] = useLocation();
 
   const copy = async (text: string, key: string) => {
     await navigator.clipboard.writeText(text);
