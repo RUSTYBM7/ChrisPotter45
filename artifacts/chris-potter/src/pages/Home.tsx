@@ -1,7 +1,22 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-const TOPICS = ["Housing", "Education", "Healthcare"];
+const ROLES = ["Actor", "Director", "Producer"];
+
+const PHOTOS = [
+  "/photos/IMG_0988.JPG",
+  "/photos/IMG_0983.JPG",
+  "/photos/IMG_0986.JPG",
+  "/photos/IMG_0992.JPG",
+  "/photos/IMG_0996.JPG",
+  "/photos/IMG_1003.JPG",
+  "/photos/IMG_0995.JPG",
+  "/photos/IMG_0990.JPG",
+  "/photos/IMG_0982.JPG",
+  "/photos/IMG_0984.JPG",
+  "/photos/IMG_0993.JPG",
+  "/photos/IMG_1004.JPG",
+];
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -15,7 +30,7 @@ function useReveal() {
           observer.unobserve(el);
         }
       },
-      { threshold: 0.12 }
+      { threshold: 0.1 }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -23,7 +38,15 @@ function useReveal() {
   return ref;
 }
 
-function RevealDiv({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+function RevealDiv({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
   const ref = useReveal();
   return (
     <div
@@ -37,58 +60,76 @@ function RevealDiv({ children, className = "", delay = 0 }: { children: React.Re
 }
 
 export default function Home() {
-  const [activeTopic, setActiveTopic] = useState("Housing");
+  const [activeRole, setActiveRole] = useState("Actor");
+  const [heroImg, setHeroImg] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const timer = setInterval(() => {
+      setHeroImg((i) => (i + 1) % 3);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handle = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", handle, { passive: true });
+    return () => window.removeEventListener("scroll", handle);
   }, []);
 
   const scrollTo = (id: string) => {
     setMenuOpen(false);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  return (
-    <div className="min-h-screen bg-[#080C14] text-white overflow-x-hidden">
+  const heroImages = [
+    "/photos/IMG_0988.JPG",
+    "/photos/IMG_0983.JPG",
+    "/photos/IMG_0986.JPG",
+  ];
 
-      {/* ─── NAV ─── */}
+  return (
+    <div className="min-h-screen bg-[#07090F] text-white overflow-x-hidden">
+
+      {/* ─── NAVIGATION ─── */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled ? "bg-[#080C14]/95 backdrop-blur-md border-b border-white/5" : ""
+          scrolled
+            ? "bg-[#07090F]/90 backdrop-blur-md border-b border-white/5"
+            : ""
         }`}
       >
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
+          <motion.button
+            initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            onClick={() => scrollTo("hero")}
+            className="text-sm font-bold tracking-[0.22em] uppercase text-white"
+            data-testid="nav-logo"
           >
-            <button
-              onClick={() => scrollTo("hero")}
-              className="text-sm md:text-base font-bold tracking-[0.2em] uppercase text-white"
-              data-testid="nav-logo"
-            >
-              Chris Potter
-            </button>
-          </motion.div>
+            Chris Potter
+          </motion.button>
 
-          {/* Desktop nav */}
           <motion.nav
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             className="hidden md:flex items-center gap-10"
           >
-            {[["Watch", "watch"], ["About", "about"], ["Topics", "topics"], ["Contact", "contact"]].map(([label, id]) => (
+            {(
+              [
+                ["Work", "work"],
+                ["About", "about"],
+                ["Gallery", "gallery"],
+                ["Contact", "contact"],
+              ] as const
+            ).map(([label, id]) => (
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className="nav-link text-xs tracking-[0.18em] uppercase text-white/60 hover:text-white transition-colors duration-200"
+                className="nav-link text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors duration-200"
                 data-testid={`nav-${id}`}
               >
                 {label}
@@ -96,26 +137,39 @@ export default function Home() {
             ))}
           </motion.nav>
 
-          {/* Mobile hamburger */}
           <button
-            className="md:hidden flex flex-col gap-1.5 p-2"
+            className="md:hidden p-2 flex flex-col gap-[5px]"
             onClick={() => setMenuOpen(!menuOpen)}
-            data-testid="nav-menu-toggle"
+            data-testid="nav-menu"
           >
-            <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+            <span
+              className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`}
+            />
+            <span
+              className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`}
+            />
+            <span
+              className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`}
+            />
           </button>
         </div>
 
-        {/* Mobile menu */}
-        <div className={`md:hidden overflow-hidden transition-all duration-400 ${menuOpen ? "max-h-64" : "max-h-0"}`}>
-          <div className="px-6 pb-6 bg-[#080C14]/98 border-b border-white/5 flex flex-col gap-5">
-            {[["Watch", "watch"], ["About", "about"], ["Topics", "topics"], ["Contact", "contact"]].map(([label, id]) => (
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-56" : "max-h-0"}`}
+        >
+          <div className="px-6 pb-8 bg-[#07090F]/98 border-b border-white/5 flex flex-col gap-6">
+            {(
+              [
+                ["Work", "work"],
+                ["About", "about"],
+                ["Gallery", "gallery"],
+                ["Contact", "contact"],
+              ] as const
+            ).map(([label, id]) => (
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className="text-sm tracking-[0.15em] uppercase text-white/60 hover:text-white transition-colors text-left"
+                className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left"
                 data-testid={`mobile-nav-${id}`}
               >
                 {label}
@@ -126,128 +180,117 @@ export default function Home() {
       </header>
 
       {/* ─── HERO ─── */}
-      <section id="hero" className="relative min-h-screen flex flex-col justify-center pt-20">
-        {/* Background radial glow */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-600/8 rounded-full blur-[120px]" />
+      <section id="hero" className="relative min-h-screen flex flex-col justify-end pb-16 md:pb-20">
+        {/* Full-bleed background image */}
+        <div className="absolute inset-0 overflow-hidden">
+          <AnimatePresence mode="sync">
+            <motion.img
+              key={heroImg}
+              src={heroImages[heroImg]}
+              alt="Chris Potter"
+              className="absolute inset-0 w-full h-full object-cover object-center"
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+              data-testid="hero-image"
+            />
+          </AnimatePresence>
+          {/* Multi-layer dark overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07090F] via-[#07090F]/50 to-[#07090F]/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#07090F]/60 via-transparent to-transparent" />
         </div>
 
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 w-full">
-          {/* Top label */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="text-xs tracking-[0.22em] uppercase text-white/40 mb-8"
-            data-testid="hero-label"
-          >
-            Watch my views on:
-          </motion.p>
-
-          {/* Topic pills */}
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
+          {/* Role pills */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
-            className="flex flex-wrap gap-3 mb-12 md:mb-16"
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+            className="flex flex-wrap gap-3 mb-8"
           >
-            {TOPICS.map((topic) => (
+            {ROLES.map((role) => (
               <button
-                key={topic}
-                onClick={() => setActiveTopic(topic)}
-                className={`topic-pill px-5 py-2 rounded-full text-sm tracking-[0.08em] transition-all duration-250 ${
-                  activeTopic === topic ? "active text-white" : "text-white/60"
+                key={role}
+                onClick={() => setActiveRole(role)}
+                className={`topic-pill px-5 py-2 rounded-full text-sm tracking-[0.06em] transition-all duration-250 ${
+                  activeRole === role ? "active text-white" : "text-white/55"
                 }`}
-                data-testid={`topic-pill-${topic.toLowerCase()}`}
+                data-testid={`role-pill-${role.toLowerCase()}`}
               >
-                {activeTopic === topic && (
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 mr-2 align-middle -mt-0.5" />
+                {activeRole === role && (
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/70 mr-2 align-middle -mt-0.5" />
                 )}
-                {topic}
+                {role}
               </button>
             ))}
           </motion.div>
 
-          {/* Video frame */}
+          {/* Hero name display */}
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-            className="relative w-full max-w-5xl mx-auto"
-            data-testid="hero-video-frame"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
           >
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-[#0D1220] video-glow border border-white/8">
-              {/* Dark cinematic frame interior */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#111827] via-[#0D1628] to-[#070C18]" />
-
-              {/* Subtle grid texture */}
-              <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                  backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-                  backgroundSize: "60px 60px"
-                }}
-              />
-
-              {/* Center content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center mb-6 hover:border-white/50 hover:bg-white/5 transition-all duration-300 cursor-pointer group">
-                  <svg className="w-6 h-6 text-white/50 group-hover:text-white/80 transition-colors ml-1" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="text-white/25 text-xs tracking-[0.2em] uppercase">{activeTopic} · Latest View</p>
-              </div>
-
-              {/* Scrolling topic label bottom */}
-              <div className="absolute bottom-0 left-0 right-0 px-6 py-4 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent">
-                <span className="text-white/50 text-xs tracking-widest uppercase">{activeTopic}</span>
-                <span className="text-white/30 text-xs">0:00 / 1:23</span>
-              </div>
-
-              {/* Corner accent */}
-              <div className="absolute top-4 left-5 flex items-center gap-3">
-                <span className="text-white/70 text-xs font-bold tracking-[0.2em] uppercase">Chris Potter</span>
-              </div>
-              <div className="absolute top-4 right-5">
-                <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Frame shadow/glow strip */}
-            <div className="absolute -bottom-8 left-10 right-10 h-8 bg-blue-600/10 blur-xl rounded-full" />
+            <h1
+              className="text-[clamp(4.5rem,13vw,11rem)] font-black uppercase leading-[0.88] tracking-tight text-white"
+              style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+              data-testid="hero-name"
+            >
+              Chris<br />Potter
+            </h1>
           </motion.div>
 
-          {/* Large display headline scrolling below */}
+          {/* Subtitle line */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="mt-24 md:mt-32 overflow-hidden"
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="mt-6 flex items-center gap-4"
           >
-            <div className="flex items-center gap-8">
-              <div className="flex-shrink-0 h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
-            </div>
+            <div className="w-8 h-px bg-white/30" />
+            <p className="text-xs tracking-[0.22em] uppercase text-white/45">
+              Actor · Director · Producer
+            </p>
           </motion.div>
+
+          {/* Scroll indicator */}
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.4, duration: 0.6 }}
+            onClick={() => scrollTo("work")}
+            className="absolute bottom-0 right-12 hidden md:flex flex-col items-center gap-2 pb-1"
+            data-testid="scroll-indicator"
+          >
+            <span className="text-[9px] tracking-[0.25em] uppercase text-white/25">Scroll</span>
+            <span className="w-px h-10 bg-gradient-to-b from-white/20 to-transparent" />
+          </motion.button>
         </div>
       </section>
 
       {/* ─── SCROLLING MARQUEE ─── */}
-      <div className="overflow-hidden py-10 md:py-14 border-y border-white/5 bg-[#060A12]" data-testid="marquee-section">
-        <div className="marquee-track">
+      <div className="overflow-hidden border-y border-white/5 bg-[#05070D]" data-testid="marquee">
+        <div className="marquee-track py-5 md:py-7">
           {[...Array(4)].map((_, i) => (
-            <span key={i} className="flex items-center gap-0 mr-0">
-              {["HOUSING", "EDUCATION", "HEALTHCARE"].map((word, j) => (
+            <span key={i} className="flex items-center">
+              {["ACTOR", "DIRECTOR", "PRODUCER", "HEARTLAND"].map((word, j) => (
                 <span key={j} className="flex items-center">
                   <span
-                    className="text-[clamp(3rem,8vw,7rem)] font-black tracking-tight leading-none uppercase"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif", color: j === 0 ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.12)" }}
+                    className="text-[clamp(2rem,5vw,4.5rem)] font-black uppercase leading-none px-1"
+                    style={{
+                      fontFamily: "'Bebas Neue', sans-serif",
+                      color:
+                        j === 0
+                          ? "rgba(255,255,255,0.80)"
+                          : j === 3
+                          ? "rgba(255,255,255,0.80)"
+                          : "rgba(255,255,255,0.10)",
+                    }}
                   >
                     {word}
                   </span>
-                  <span className="mx-8 md:mx-14 text-[clamp(1.5rem,3vw,3rem)] text-white/10 font-light">·</span>
+                  <span className="mx-8 md:mx-12 text-white/8 text-2xl font-extralight">·</span>
                 </span>
               ))}
             </span>
@@ -255,50 +298,187 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ─── WORK / SELECTED ROLES ─── */}
+      <section id="work" className="py-24 md:py-36" data-testid="work-section">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <div className="flex items-end justify-between mb-16 md:mb-20 gap-6 flex-wrap">
+            <RevealDiv>
+              <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">
+                Selected Work
+              </p>
+              <h2
+                className="text-[clamp(2.8rem,6vw,5.5rem)] font-black uppercase leading-[0.9] tracking-tight text-white"
+                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                data-testid="work-heading"
+              >
+                On Screen &<br />Behind the Lens
+              </h2>
+            </RevealDiv>
+            <RevealDiv delay={100}>
+              <button
+                className="text-[10px] tracking-[0.2em] uppercase text-white/35 hover:text-white border border-white/12 hover:border-white/30 px-5 py-2.5 rounded transition-all duration-200"
+                data-testid="view-all-work"
+              >
+                Full Filmography
+              </button>
+            </RevealDiv>
+          </div>
+
+          {/* Featured project — large */}
+          <RevealDiv className="mb-6">
+            <div
+              className="relative overflow-hidden rounded-lg aspect-[16/7] group cursor-pointer"
+              data-testid="work-featured"
+            >
+              <img
+                src="/photos/IMG_1003.JPG"
+                alt="Heartland"
+                className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-[1.02] transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07090F]/90 via-[#07090F]/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 flex items-end justify-between">
+                <div>
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-white/40 mb-2">
+                    CBC · Netflix · 2007 – Present
+                  </p>
+                  <h3
+                    className="text-4xl md:text-6xl font-black uppercase text-white"
+                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                  >
+                    Heartland
+                  </h3>
+                  <p className="text-sm text-white/50 mt-1">Tim Fleming — Starring Role</p>
+                </div>
+                <div className="hidden md:flex items-center gap-2 text-white/40 hover:text-white transition-colors">
+                  <span className="text-xs tracking-widest uppercase">View</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 17L17 7M17 7H7M17 7v10" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </RevealDiv>
+
+          {/* Grid of other works */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+            {[
+              {
+                img: "/photos/IMG_0995.JPG",
+                title: "Riding & Roping",
+                subtitle: "TV Movie — Lead Role",
+                year: "2024",
+              },
+              {
+                img: "/photos/IMG_0988.JPG",
+                title: "Directing Projects",
+                subtitle: "Film Direction",
+                year: "2019 – Present",
+              },
+              {
+                img: "/photos/IMG_0982.JPG",
+                title: "In the Edit Suite",
+                subtitle: "Production & Post",
+                year: "Ongoing",
+              },
+            ].map((item, i) => (
+              <RevealDiv key={item.title} delay={i * 100}>
+                <div
+                  className="relative overflow-hidden rounded-md aspect-[4/5] group cursor-pointer"
+                  data-testid={`work-card-${i}`}
+                >
+                  <img
+                    src={item.img}
+                    alt={item.title}
+                    className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.04] transition-transform duration-600"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07090F]/85 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+                    <p className="text-[10px] tracking-[0.18em] uppercase text-white/35 mb-1">
+                      {item.year}
+                    </p>
+                    <h4
+                      className="text-xl md:text-2xl font-black uppercase text-white"
+                      style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                    >
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-white/45 mt-0.5">{item.subtitle}</p>
+                  </div>
+                  <div className="absolute top-4 right-4 w-7 h-7 rounded-full border border-white/15 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
+                    </svg>
+                  </div>
+                </div>
+              </RevealDiv>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="section-line mx-6 md:mx-12" />
+
       {/* ─── ABOUT ─── */}
       <section id="about" className="py-24 md:py-36" data-testid="about-section">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="grid md:grid-cols-12 gap-12 md:gap-20 items-start">
-            <div className="md:col-span-4">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <div className="grid md:grid-cols-12 gap-14 md:gap-20 items-start">
+            {/* Photo */}
+            <div className="md:col-span-5">
               <RevealDiv>
-                <p className="text-xs tracking-[0.22em] uppercase text-white/35 mb-5">About</p>
+                <div className="relative rounded-md overflow-hidden aspect-[3/4]">
+                  <img
+                    src="/photos/IMG_0983.JPG"
+                    alt="Chris Potter"
+                    className="w-full h-full object-cover object-center"
+                    data-testid="about-photo"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07090F]/50 to-transparent" />
+                </div>
+              </RevealDiv>
+            </div>
+
+            {/* Text */}
+            <div className="md:col-span-6 md:col-start-7 flex flex-col justify-center">
+              <RevealDiv>
+                <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-5">About</p>
                 <h2
-                  className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[0.92] uppercase tracking-tight text-white"
+                  className="text-[clamp(3.5rem,7vw,6rem)] font-black uppercase leading-[0.88] tracking-tight text-white mb-8"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   data-testid="about-heading"
                 >
                   Chris<br />Potter
                 </h2>
               </RevealDiv>
-            </div>
 
-            <div className="md:col-span-7 md:col-start-6">
-              <RevealDiv delay={150}>
-                <p className="text-lg md:text-xl text-white/75 leading-relaxed mb-8 font-light">
-                  Chris Potter is a nationally recognized commentator, speaker, and thought leader on America's most pressing social policy issues — housing affordability, education reform, and healthcare access.
+              <RevealDiv delay={120}>
+                <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-6 font-light">
+                  Chris Potter is a multi-award-winning Canadian actor, director, and producer with over three decades of experience in film and television.
                 </p>
-                <p className="text-base md:text-lg text-white/50 leading-relaxed mb-8 font-light">
-                  With over a decade of experience shaping public discourse, Chris brings clarity and conviction to conversations that matter. His insights have appeared in leading media outlets, think tanks, and legislative hearings across the country.
+                <p className="text-base text-white/45 leading-relaxed mb-6 font-light">
+                  Best known to audiences worldwide as Tim Fleming in the beloved CBC/Netflix drama <em className="text-white/60 not-italic font-normal">Heartland</em>, Chris has built a career defined by authentic storytelling, physical commitment, and a deep love of the craft.
                 </p>
-                <p className="text-base md:text-lg text-white/50 leading-relaxed font-light">
-                  Whether speaking to a stadium audience or testifying before a Senate committee, Chris Potter cuts through the noise with evidence-based arguments and an unflinching commitment to actionable solutions.
+                <p className="text-base text-white/45 leading-relaxed mb-10 font-light">
+                  A skilled horseman and outdoorsman, Chris brings a rare combination of rugged authenticity and emotional range to every role. Behind the camera, his directing work reflects the same quiet intensity that defines his performances.
                 </p>
 
-                <div className="mt-12 flex flex-wrap gap-6">
-                  <div data-testid="stat-years">
-                    <p className="text-4xl md:text-5xl font-black text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>10+</p>
-                    <p className="text-xs tracking-[0.15em] uppercase text-white/35 mt-1">Years of Impact</p>
-                  </div>
-                  <div className="w-px bg-white/8 self-stretch" />
-                  <div data-testid="stat-talks">
-                    <p className="text-4xl md:text-5xl font-black text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>200+</p>
-                    <p className="text-xs tracking-[0.15em] uppercase text-white/35 mt-1">Talks & Keynotes</p>
-                  </div>
-                  <div className="w-px bg-white/8 self-stretch" />
-                  <div data-testid="stat-topics">
-                    <p className="text-4xl md:text-5xl font-black text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>3</p>
-                    <p className="text-xs tracking-[0.15em] uppercase text-white/35 mt-1">Core Policy Areas</p>
-                  </div>
+                <div className="flex flex-wrap gap-8">
+                  {[
+                    { num: "30+", label: "Years in Film & TV" },
+                    { num: "17", label: "Heartland Seasons" },
+                    { num: "50+", label: "Screen Credits" },
+                  ].map((stat, i) => (
+                    <div key={i} data-testid={`stat-${i}`}>
+                      <p
+                        className="text-4xl md:text-5xl font-black text-white"
+                        style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                      >
+                        {stat.num}
+                      </p>
+                      <p className="text-[10px] tracking-[0.18em] uppercase text-white/30 mt-1">
+                        {stat.label}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </RevealDiv>
             </div>
@@ -308,77 +488,45 @@ export default function Home() {
 
       <div className="section-line mx-6 md:mx-12" />
 
-      {/* ─── TOPICS ─── */}
-      <section id="topics" className="py-24 md:py-36" data-testid="topics-section">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+      {/* ─── GALLERY ─── */}
+      <section id="gallery" className="py-24 md:py-36" data-testid="gallery-section">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <RevealDiv>
-            <p className="text-xs tracking-[0.22em] uppercase text-white/35 mb-4">Areas of Focus</p>
+            <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">Gallery</p>
             <h2
-              className="text-[clamp(2.5rem,5vw,4.5rem)] font-black leading-tight uppercase tracking-tight text-white mb-16 md:mb-20"
+              className="text-[clamp(2.8rem,6vw,5.5rem)] font-black uppercase leading-[0.9] tracking-tight text-white mb-14 md:mb-18"
               style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-              data-testid="topics-heading"
+              data-testid="gallery-heading"
             >
-              What Chris<br />Stands For
+              Stills &<br />On Set
             </h2>
           </RevealDiv>
 
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+          {/* Masonry-style grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {[
-              {
-                topic: "Housing",
-                number: "01",
-                description:
-                  "America's housing crisis is a policy failure, not a market inevitability. Chris advocates for bold zoning reform, renter protections, and public investment in attainable housing at every income level.",
-                points: ["Zoning & Land Use Reform", "Renter Rights & Protections", "Affordable Housing Funding"],
-              },
-              {
-                topic: "Education",
-                number: "02",
-                description:
-                  "A world-class education should not be a function of a child's zip code. Chris challenges the systemic inequities that lock millions out of the opportunity that good schooling provides.",
-                points: ["Equitable School Funding", "Teacher Pay & Retention", "Early Childhood Investment"],
-              },
-              {
-                topic: "Healthcare",
-                number: "03",
-                description:
-                  "Healthcare is a right, not a luxury. Chris makes the case for transparent pricing, expanded coverage, and systems that put patients — not profits — first.",
-                points: ["Coverage Expansion", "Price Transparency", "Mental Health Access"],
-              },
+              { src: "/photos/IMG_0992.JPG", tall: true },
+              { src: "/photos/IMG_0996.JPG", tall: false },
+              { src: "/photos/IMG_0984.JPG", tall: false },
+              { src: "/photos/IMG_0990.JPG", tall: true },
+              { src: "/photos/IMG_0993.JPG", tall: false },
+              { src: "/photos/IMG_0981.JPG", tall: true },
+              { src: "/photos/IMG_1002.JPG", tall: false },
+              { src: "/photos/IMG_0987.JPG", tall: false },
             ].map((item, i) => (
-              <RevealDiv key={item.topic} delay={i * 120}>
+              <RevealDiv key={i} delay={i * 60}>
                 <div
-                  className="h-full border border-white/8 rounded-lg p-8 md:p-10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/14 transition-all duration-400 group"
-                  data-testid={`topic-card-${item.topic.toLowerCase()}`}
+                  className={`relative overflow-hidden rounded group cursor-pointer ${
+                    item.tall ? "aspect-[3/4]" : "aspect-square"
+                  }`}
+                  data-testid={`gallery-item-${i}`}
                 >
-                  <div className="flex items-start justify-between mb-8">
-                    <span className="text-xs tracking-[0.2em] text-white/25 uppercase">{item.number}</span>
-                    <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-colors duration-300">
-                      <svg className="w-3 h-3 text-white/30 group-hover:text-white/60 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7v10" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <h3
-                    className="text-4xl md:text-5xl font-black uppercase text-white mb-5 leading-none"
-                    style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                  >
-                    {item.topic}
-                  </h3>
-
-                  <p className="text-sm text-white/50 leading-relaxed mb-8 font-light">
-                    {item.description}
-                  </p>
-
-                  <ul className="space-y-2.5">
-                    {item.points.map((point) => (
-                      <li key={point} className="flex items-center gap-3 text-xs text-white/35 tracking-wide">
-                        <span className="w-1 h-1 rounded-full bg-blue-400/60 flex-shrink-0" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
+                  <img
+                    src={item.src}
+                    alt={`Chris Potter ${i + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.05] transition-transform duration-600"
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               </RevealDiv>
             ))}
@@ -388,88 +536,17 @@ export default function Home() {
 
       <div className="section-line mx-6 md:mx-12" />
 
-      {/* ─── WATCH / LATEST VIEWS ─── */}
-      <section id="watch" className="py-24 md:py-36" data-testid="watch-section">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="flex items-end justify-between mb-14 md:mb-18 gap-6 flex-wrap">
-            <RevealDiv>
-              <p className="text-xs tracking-[0.22em] uppercase text-white/35 mb-4">Latest Views</p>
-              <h2
-                className="text-[clamp(2.5rem,5vw,4.5rem)] font-black leading-tight uppercase tracking-tight text-white"
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-                data-testid="watch-heading"
-              >
-                Watch &<br />Listen
-              </h2>
-            </RevealDiv>
-            <RevealDiv delay={100}>
-              <button
-                className="text-xs tracking-[0.18em] uppercase text-white/40 hover:text-white transition-colors duration-200 border border-white/15 hover:border-white/35 px-5 py-3 rounded"
-                data-testid="view-all-button"
-              >
-                View All
-              </button>
-            </RevealDiv>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {[
-              { title: "The Housing Crisis Explained", topic: "Housing", duration: "14:32", tag: "Featured" },
-              { title: "Why School Funding Is Broken", topic: "Education", duration: "18:45", tag: "Recent" },
-              { title: "The True Cost of American Healthcare", topic: "Healthcare", duration: "22:10", tag: "Recent" },
-              { title: "Zoning Laws That Are Killing Cities", topic: "Housing", duration: "9:58", tag: null },
-              { title: "Teachers Deserve Better", topic: "Education", duration: "11:20", tag: null },
-              { title: "Mental Health & the Coverage Gap", topic: "Healthcare", duration: "16:04", tag: null },
-            ].map((video, i) => (
-              <RevealDiv key={video.title} delay={i * 80}>
-                <div
-                  className="group cursor-pointer"
-                  data-testid={`video-card-${i}`}
-                >
-                  <div className="relative aspect-video rounded-md overflow-hidden bg-[#0D1220] border border-white/6 mb-4 group-hover:border-white/15 transition-all duration-300">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${
-                      video.topic === "Housing" ? "from-blue-900/30 to-slate-900/80" :
-                      video.topic === "Education" ? "from-indigo-900/30 to-slate-900/80" :
-                      "from-sky-900/30 to-slate-900/80"
-                    }`} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white/50 group-hover:bg-white/8 transition-all duration-300">
-                        <svg className="w-4 h-4 text-white/40 group-hover:text-white/80 transition-colors ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute bottom-3 right-3 text-white/40 text-xs">{video.duration}</div>
-                    {video.tag && (
-                      <div className="absolute top-3 left-3 text-[10px] tracking-[0.15em] uppercase text-white/50 border border-white/15 px-2 py-0.5 rounded-sm">
-                        {video.tag}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-[10px] tracking-[0.15em] uppercase text-blue-400/70 mb-1.5">{video.topic}</p>
-                  <h4 className="text-sm md:text-base text-white/80 group-hover:text-white transition-colors duration-200 font-medium leading-snug">
-                    {video.title}
-                  </h4>
-                </div>
-              </RevealDiv>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div className="section-line mx-6 md:mx-12" />
-
-      {/* ─── QUOTE / PULLQUOTE ─── */}
-      <section className="py-24 md:py-36 overflow-hidden" data-testid="quote-section">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+      {/* ─── QUOTE ─── */}
+      <section className="py-24 md:py-36" data-testid="quote-section">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
           <RevealDiv>
             <div className="max-w-4xl">
-              <p className="text-4xl md:text-5xl lg:text-6xl font-light text-white/80 leading-[1.2] tracking-tight mb-10">
-                "The defining issues of our time — housing, education, healthcare — are not inevitable. They are choices. And we can choose differently."
+              <p className="text-3xl md:text-5xl lg:text-[3.5rem] font-light text-white/75 leading-[1.25] tracking-tight mb-10">
+                "I've always been drawn to characters who are complicated — people trying to do right by others while struggling with their own demons. That tension is where the real story lives."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-8 h-px bg-white/20" />
-                <p className="text-xs tracking-[0.2em] uppercase text-white/35">Chris Potter</p>
+                <p className="text-[10px] tracking-[0.22em] uppercase text-white/30">Chris Potter</p>
               </div>
             </div>
           </RevealDiv>
@@ -480,38 +557,46 @@ export default function Home() {
 
       {/* ─── CONTACT ─── */}
       <section id="contact" className="py-24 md:py-36" data-testid="contact-section">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="grid md:grid-cols-12 gap-12 md:gap-20 items-start">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+          <div className="grid md:grid-cols-12 gap-14 md:gap-20">
             <div className="md:col-span-5">
               <RevealDiv>
-                <p className="text-xs tracking-[0.22em] uppercase text-white/35 mb-5">Get in Touch</p>
+                <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-5">
+                  Get in Touch
+                </p>
                 <h2
-                  className="text-[clamp(3rem,6vw,5.5rem)] font-black leading-[0.92] uppercase tracking-tight text-white mb-8"
+                  className="text-[clamp(3rem,6vw,5.5rem)] font-black uppercase leading-[0.88] tracking-tight text-white mb-8"
                   style={{ fontFamily: "'Bebas Neue', sans-serif" }}
                   data-testid="contact-heading"
                 >
-                  Book Chris<br />to Speak
+                  Casting &<br />Inquiries
                 </h2>
-                <p className="text-base text-white/50 leading-relaxed font-light mb-10">
-                  Chris is available for keynote addresses, panel discussions, media commentary, and legislative consultations on housing, education, and healthcare policy.
+                <p className="text-base text-white/45 leading-relaxed mb-10 font-light">
+                  Available for feature films, limited series, guest roles, and select directorial projects. Represented for film and television in Canada and internationally.
                 </p>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-sm text-white/40">
-                    <span className="w-1 h-1 rounded-full bg-blue-400/60" />
-                    Keynote Speaking
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-white/40">
-                    <span className="w-1 h-1 rounded-full bg-blue-400/60" />
-                    Media Commentary & Interviews
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-white/40">
-                    <span className="w-1 h-1 rounded-full bg-blue-400/60" />
-                    Policy Consulting
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-white/40">
-                    <span className="w-1 h-1 rounded-full bg-blue-400/60" />
-                    Panel Discussions
-                  </div>
+
+                <div className="space-y-3.5">
+                  {[
+                    "Feature Film & Television",
+                    "Directing Opportunities",
+                    "Speaking Engagements",
+                    "Fan & Press Inquiries",
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-3 text-sm text-white/35">
+                      <span className="w-1 h-1 rounded-full bg-white/30 flex-shrink-0" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+
+                {/* On-set photo */}
+                <div className="mt-12 rounded-md overflow-hidden aspect-[4/3]">
+                  <img
+                    src="/photos/IMG_1004.JPG"
+                    alt="Chris Potter on set"
+                    className="w-full h-full object-cover object-top"
+                    data-testid="contact-photo"
+                  />
                 </div>
               </RevealDiv>
             </div>
@@ -525,73 +610,86 @@ export default function Home() {
                 >
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] tracking-[0.18em] uppercase text-white/35 mb-2">First Name</label>
+                      <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-2">
+                        First Name
+                      </label>
                       <input
                         type="text"
                         placeholder="Jane"
-                        className="w-full bg-white/[0.03] border border-white/10 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
+                        className="w-full bg-white/[0.025] border border-white/8 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/25 transition-colors"
                         data-testid="input-first-name"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] tracking-[0.18em] uppercase text-white/35 mb-2">Last Name</label>
+                      <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-2">
+                        Last Name
+                      </label>
                       <input
                         type="text"
                         placeholder="Smith"
-                        className="w-full bg-white/[0.03] border border-white/10 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
+                        className="w-full bg-white/[0.025] border border-white/8 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/25 transition-colors"
                         data-testid="input-last-name"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] tracking-[0.18em] uppercase text-white/35 mb-2">Email</label>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-2">
+                      Email
+                    </label>
                     <input
                       type="email"
-                      placeholder="jane@organization.com"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
+                      placeholder="jane@studio.com"
+                      className="w-full bg-white/[0.025] border border-white/8 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/25 transition-colors"
                       data-testid="input-email"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] tracking-[0.18em] uppercase text-white/35 mb-2">Organization</label>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-2">
+                      Company / Production House
+                    </label>
                     <input
                       type="text"
-                      placeholder="Your organization"
-                      className="w-full bg-white/[0.03] border border-white/10 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
-                      data-testid="input-organization"
+                      placeholder="Your production company"
+                      className="w-full bg-white/[0.025] border border-white/8 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/25 transition-colors"
+                      data-testid="input-company"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] tracking-[0.18em] uppercase text-white/35 mb-2">Type of Inquiry</label>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-2">
+                      Type of Inquiry
+                    </label>
                     <select
-                      className="w-full bg-[#0D1220] border border-white/10 rounded px-4 py-3.5 text-sm text-white/70 focus:outline-none focus:border-white/30 transition-colors appearance-none"
-                      data-testid="select-inquiry-type"
+                      className="w-full bg-[#0C0F18] border border-white/8 rounded px-4 py-3.5 text-sm text-white/60 focus:outline-none focus:border-white/25 transition-colors appearance-none"
+                      data-testid="select-inquiry"
                     >
                       <option value="">Select one</option>
-                      <option value="keynote">Keynote Speaking</option>
-                      <option value="media">Media / Interview</option>
-                      <option value="consulting">Policy Consulting</option>
-                      <option value="panel">Panel Discussion</option>
+                      <option value="casting">Casting — Film</option>
+                      <option value="casting-tv">Casting — Television</option>
+                      <option value="directing">Directing Project</option>
+                      <option value="speaking">Speaking / Appearance</option>
+                      <option value="press">Press / Media</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-[10px] tracking-[0.18em] uppercase text-white/35 mb-2">Message</label>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-2">
+                      Message
+                    </label>
                     <textarea
-                      rows={4}
-                      placeholder="Tell us about the event or inquiry..."
-                      className="w-full bg-white/[0.03] border border-white/10 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors resize-none"
+                      rows={5}
+                      placeholder="Tell us about your project or inquiry..."
+                      className="w-full bg-white/[0.025] border border-white/8 rounded px-4 py-3.5 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/25 transition-colors resize-none"
                       data-testid="input-message"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-4 bg-white text-[#080C14] text-xs tracking-[0.18em] uppercase font-bold rounded hover:bg-white/90 transition-colors duration-200"
-                    data-testid="button-submit-contact"
+                    className="w-full py-4 bg-white text-[#07090F] text-[10px] tracking-[0.22em] uppercase font-bold rounded hover:bg-white/88 active:bg-white/75 transition-colors duration-200"
+                    data-testid="button-submit"
                   >
                     Send Inquiry
                   </button>
@@ -603,24 +701,31 @@ export default function Home() {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-white/5 py-10 md:py-14" data-testid="footer">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-xs font-bold tracking-[0.22em] uppercase text-white/50">Chris Potter</p>
-
+      <footer className="border-t border-white/5 py-10 md:py-12" data-testid="footer">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-xs font-bold tracking-[0.24em] uppercase text-white/40">
+            Chris Potter
+          </p>
           <div className="flex gap-8">
-            {[["Watch", "watch"], ["About", "about"], ["Topics", "topics"], ["Contact", "contact"]].map(([label, id]) => (
+            {(
+              [
+                ["Work", "work"],
+                ["About", "about"],
+                ["Gallery", "gallery"],
+                ["Contact", "contact"],
+              ] as const
+            ).map(([label, id]) => (
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className="text-[10px] tracking-[0.18em] uppercase text-white/25 hover:text-white/50 transition-colors"
+                className="text-[9px] tracking-[0.2em] uppercase text-white/22 hover:text-white/45 transition-colors"
                 data-testid={`footer-nav-${id}`}
               >
                 {label}
               </button>
             ))}
           </div>
-
-          <p className="text-[10px] tracking-wide text-white/20">
+          <p className="text-[9px] tracking-wide text-white/18">
             &copy; {new Date().getFullYear()} Chris Potter. All rights reserved.
           </p>
         </div>

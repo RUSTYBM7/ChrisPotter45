@@ -1,0 +1,64 @@
+You are an expert front-end engineer tasked with rebuilding a website.
+
+OBJECTIVE:
+Create a full, faithful visual rebuild of the website design shown in the reference below, while removing ALL Mark Woodland branding, naming, and identity, and replacing it entirely with the existing CHRIS POTTER content and branding.
+
+REFERENCE (DESIGN ONLY):
+https://www.behance.net/gallery/247847057/Mark-Woodland
+
+IMPORTANT:
+- The reference is used strictly as a visual, layout, and interaction blueprint.
+- The final site must NOT mention, reference, or attribute Mark Woodland in any way.
+- The site must present itself exclusively as CHRIS POTTER.
+
+CONTENT RULES:
+- Keep all existing CHRIS POTTER content exactly as-is:
+  - Text
+  - Page structure
+  - Sections
+  - Navigation
+  - Copy
+- Do NOT rewrite, summarize, or alter content.
+- Replace only visual placement if needed to match the reference layout.
+
+DESIGN REBUILD REQUIREMENTS:
+- Match the reference design as closely as possible:
+  - Layout structure
+  - Grid system
+  - Spacing
+  - Typography scale
+  - Font weight usage
+  - Visual hierarchy
+  - Navigation behavior
+  - Section rhythm
+  - Component design
+- Replicate the same:
+  - Minimalist editorial layout
+  - High-end portfolio / creative studio feel
+  - Large whitespace usage
+  - Strong typography-driven design
+  - Subtle but precise animations and transitions
+- Treat the reference as a blueprint, not inspiration.
+
+BRANDING ADAPTATION:
+- Replace all names, logos, and identifiers with:
+  - CHRIS POTTER
+- Ensure the visual system feels native to CHRIS POTTER, not Mark Woodland.
+- Do not introduce any new branding elements unless required for parity.
+
+TECHNICAL REQUIREMENTS:
+- Clean, modern HTML, CSS, and JavaScript (or React/Next if project uses it)
+- Fully responsive (mobile, tablet, desktop)
+- High-fidelity reproduction of the reference behavior
+- Accessible and performant
+- Maintainable codebase
+
+DO NOT:
+- Do not credit Mark Woodland
+- Do not leave placeholder text
+- Do not add new sections
+- Do not change tone or messaging
+- Do not redesign beyond what is necessary to match the reference
+
+DELIVERABLE:
+A fully rebuilt website that visually mirrors the reference design, but presents itself entirely and exclusively as CHRIS POTTER
