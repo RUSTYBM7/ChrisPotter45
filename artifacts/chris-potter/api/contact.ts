@@ -129,7 +129,7 @@ export default async function handler(req: IncomingMessage & { query?: Record<st
       sendEmail(mgmt, subject, notifHtml),
       sendAutoReply(body.email, body.firstName, "We received your inquiry — Chris Potter Official",
         "Thank you for reaching out to Chris Potter's management team. We have received your inquiry and will respond within 3–5 business days."),
-      sendSMS("", `📬 New management inquiry from ${body.firstName} ${body.lastName} (${body.reason}). Email: ${body.email}`),
+      sendSMS("", `[INQUIRY] Management: ${body.reason} from ${body.firstName} ${body.lastName} (${body.email})`),
     ]);
 
     res.end(JSON.stringify({ success: true, message: "Inquiry received. Our management team will respond within 3–5 business days." }));
@@ -167,7 +167,7 @@ export default async function handler(req: IncomingMessage & { query?: Record<st
       sendEmail(fanEmail, subject, notifHtml),
       sendAutoReply(body.email, body.firstName, `Your ${body.badgeTier} Application — Chris Potter Official`,
         `Thank you for applying for the <strong>${body.badgeTier}</strong>! We're thrilled by your support. Our fan team will review your application and reach out within 48 hours to discuss next steps.`),
-      sendSMS("", `⭐ Fan badge inquiry: ${body.badgeTier} from ${body.firstName} ${body.lastName} (${body.email})`),
+      sendSMS("", `[BADGE] ${body.badgeTier} from ${body.firstName} ${body.lastName} (${body.email})`),
     ]);
 
     res.end(JSON.stringify({ success: true, message: "Thank you for your interest! Our fan team will reach out within 48 hours." }));
@@ -204,10 +204,47 @@ export default async function handler(req: IncomingMessage & { query?: Record<st
       sendEmail(supportEmail, subject, notifHtml),
       sendAutoReply(body.email, body.firstName, "Your Message to the Heartland Legacy Fund — Received",
         "Thank you for reaching out to the Heartland Legacy Fund. We have received your message and our support team will respond within 48 hours. Your generosity and interest in the Fund means the world to us — and to the horses and youth we serve."),
-      sendSMS("", `💙 Foundation support: ${body.supportType || "General"} from ${body.firstName} ${body.lastName} (${body.email})`),
+      sendSMS("", `[FOUNDATION] ${body.supportType || "General"} from ${body.firstName} ${body.lastName} (${body.email})`),
     ]);
 
     res.end(JSON.stringify({ success: true, message: "Thank you for your message. Our support team will get back to you within 48 hours." }));
+    return;
+  }
+
+  // ── /api/contact/event-registration ──
+  if (url.includes("/event-registration")) {
+    const required = ["firstName", "lastName", "email", "eventName"];
+    const missing = required.filter(f => !body[f]);
+    if (missing.length) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, message: `Missing: ${missing.join(", ")}` }));
+      return;
+    }
+
+    const supportEmail = process.env.SUPPORT_EMAIL ?? "support@chrispotterofficial.site";
+    const subject = `Event Registration — ${body.eventName} — ${body.firstName} ${body.lastName}`;
+    const tableData: Record<string, string> = {
+      "First Name": body.firstName, "Last Name": body.lastName, Email: body.email,
+      Phone: body.phone || "—", Event: body.eventName, "Event Date": body.eventDate || "—",
+      "Party Size": body.partySize || "1", Message: body.message || "—",
+    };
+
+    const notifHtml = `<!DOCTYPE html><html><body style="background:#07090F;color:#fff;font-family:Arial,sans-serif;margin:0;padding:0;">
+<div style="max-width:640px;margin:0 auto;padding:48px 32px;">
+  <p style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:24px;">Heartland Legacy Fund — Event Registration</p>
+  <h2 style="font-size:28px;font-weight:900;text-transform:uppercase;margin:0 0 32px;">${subject}</h2>
+  ${emailTable(tableData)}
+  <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:40px;">Received: ${new Date().toUTCString()}</p>
+</div></body></html>`;
+
+    await Promise.all([
+      sendEmail(supportEmail, subject, notifHtml),
+      sendAutoReply(body.email, body.firstName, `Registration Confirmed — ${body.eventName}`,
+        `Thank you for registering your interest in <strong>${body.eventName}</strong>. We have received your registration and our events team will follow up with full details — including ticketing and logistics — as the event date approaches. We look forward to seeing you there.`),
+      sendSMS("", `[EVENT] ${body.eventName} — ${body.firstName} ${body.lastName} (party: ${body.partySize || "1"}) — ${body.email}`),
+    ]);
+
+    res.end(JSON.stringify({ success: true, message: "Registration received. We will follow up with full event details closer to the date." }));
     return;
   }
 

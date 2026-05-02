@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBar from "@/components/shared/NavBar";
 import Footer from "@/components/shared/Footer";
@@ -37,10 +37,10 @@ const EVENTS = [
 ];
 
 const TIERS = [
-  { amount: "$25", label: "A Day of Feed", icon: "🌾", desc: "Provides one week of hay and feed for a horse in our rescue program, giving a rehabilitating animal the nutrition it needs to recover.", impact: "Feeds 1 horse for 7 days" },
-  { amount: "$100", label: "A Lesson", icon: "🐴", desc: "Covers the full cost of one youth equestrian session — instructor time, horse, equipment, and insurance. One child's first experience with a horse.", impact: "Funds 1 youth session" },
-  { amount: "$500", label: "A Week of Care", icon: "❤️", desc: "Covers comprehensive veterinary care for one rescued horse for an entire week, including examinations, medications, farrier, and specialist visits if needed.", impact: "Full vet care, 1 horse" },
-  { amount: "$2,500+", label: "A Season", icon: "⭐", desc: "Sponsors an entire youth cohort through one 12-week equestrian term — 8 participants, all materials, transport, instruction, and a graduation ceremony.", impact: "Sponsors 8 youth, 12 weeks" },
+  { amount: "$25", label: "A Day of Feed", tier: "01", desc: "Provides one week of hay and feed for a horse in our rescue program, giving a rehabilitating animal the nutrition it needs to recover.", impact: "Feeds 1 horse for 7 days" },
+  { amount: "$100", label: "A Lesson", tier: "02", desc: "Covers the full cost of one youth equestrian session — instructor time, horse, equipment, and insurance. One child's first experience with a horse.", impact: "Funds 1 youth session" },
+  { amount: "$500", label: "A Week of Care", tier: "03", desc: "Covers comprehensive veterinary care for one rescued horse for an entire week, including examinations, medications, farrier, and specialist visits if needed.", impact: "Full vet care, 1 horse" },
+  { amount: "$2,500+", label: "A Season", tier: "04", desc: "Sponsors an entire youth cohort through one 12-week equestrian term — 8 participants, all materials, transport, instruction, and a graduation ceremony.", impact: "Sponsors 8 youth, 12 weeks" },
 ];
 
 const FAQ_ITEMS = [
@@ -53,6 +53,116 @@ const FAQ_ITEMS = [
   { q: "How are rescue horses selected?", a: "We work with regional animal welfare authorities and independent tiplines. Horses are assessed by our partner veterinarians and prioritized by urgency of need. Every rescued horse receives a full health assessment, rehabilitation plan, and — where possible — a placement with a loving home or working partner ranch." },
   { q: "Are donations accepted internationally?", a: "Yes. We accept international donations via Bitcoin, USDT TRC-20, Stripe, and PayPal, all of which handle currency conversion automatically. International donors should note that Canadian tax receipt rules apply only to Canadian residents." },
 ];
+
+// ── Event Registration Modal ──────────────────────────────────────────────────
+function EventRegistrationModal({ event, onClose }: { event: typeof EVENTS[0]; onClose: () => void }) {
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", phone: "", partySize: "1", message: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", esc);
+    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", esc); };
+  }, [onClose]);
+
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const r = await fetch("/api/contact/event-registration", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, eventName: event.title, eventDate: event.date }),
+      });
+      const data = await r.json() as { success: boolean; message: string };
+      if (data.success) { setStatus("done"); setMsg(data.message); }
+      else { setStatus("error"); setMsg(data.message); }
+    } catch { setStatus("error"); setMsg("Something went wrong. Please try again."); }
+  };
+
+  const inp = "w-full bg-white/[0.04] border border-white/8 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/22 transition-colors";
+
+  return (
+    <AnimatePresence>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60] bg-black/82 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
+        onClick={e => e.target === e.currentTarget && onClose()}>
+        <motion.div initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-[#0C0F18] border border-white/10 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto shadow-2xl">
+
+          {/* Header */}
+          <div className="sticky top-0 bg-[#0C0F18]/98 backdrop-blur-sm border-b border-white/6 px-7 py-5 flex items-start justify-between z-10 rounded-t-2xl">
+            <div>
+              <p className="text-[9px] tracking-[0.22em] uppercase text-white/28 mb-1">Event Registration</p>
+              <h3 className="text-xl font-black uppercase text-white leading-tight" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{event.title}</h3>
+              <p className="text-xs text-white/35 mt-1">{event.date} · {event.location}</p>
+            </div>
+            <button onClick={onClose} className="w-8 h-8 rounded-full border border-white/10 hover:border-white/28 flex items-center justify-center text-white/35 hover:text-white transition-all flex-shrink-0 ml-4">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <div className="px-7 py-7">
+            {status === "done" ? (
+              <div className="text-center py-10">
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/25 flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" /></svg>
+                </motion.div>
+                <h4 className="text-3xl font-black uppercase mb-3" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Registration Received</h4>
+                <p className="text-sm text-white/45 max-w-sm mx-auto mb-8">{msg}</p>
+                <button onClick={onClose} className="px-6 py-2.5 border border-white/15 rounded-lg text-xs tracking-widest uppercase text-white/40 hover:text-white hover:border-white/30 transition-all">Close</button>
+              </div>
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">First Name *</label>
+                    <input required type="text" value={form.firstName} onChange={set("firstName")} placeholder="Jane" className={inp} />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">Last Name *</label>
+                    <input required type="text" value={form.lastName} onChange={set("lastName")} placeholder="Smith" className={inp} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">Email Address *</label>
+                  <input required type="email" value={form.email} onChange={set("email")} placeholder="your@email.com" className={inp} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">Phone (optional)</label>
+                    <input type="tel" value={form.phone} onChange={set("phone")} placeholder="+1 (555) 000-0000" className={inp} />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">Party Size</label>
+                    <select value={form.partySize} onChange={set("partySize")} className="w-full bg-[#0a0d14] border border-white/8 rounded-lg px-4 py-3 text-sm text-white/65 focus:outline-none focus:border-white/22 transition-colors">
+                      {["1","2","3","4","5","6","7","8","9","10+"].map(n => <option key={n}>{n}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">Message (optional)</label>
+                  <textarea value={form.message} onChange={set("message")} rows={3} placeholder="Dietary requirements, accessibility needs, or any other notes..." className={inp + " resize-none"} />
+                </div>
+                {status === "error" && <p className="text-red-400/65 text-sm">{msg}</p>}
+                <button type="submit" disabled={status === "loading"}
+                  className="w-full py-4 bg-white text-[#07090F] text-[10px] tracking-[0.22em] uppercase font-bold rounded-lg hover:bg-white/88 transition-colors disabled:opacity-50">
+                  {status === "loading" ? "Registering..." : "Register Interest"}
+                </button>
+                <p className="text-[10px] text-white/18 text-center">Confirmation sent to your email · Full event details follow closer to the date</p>
+              </form>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 
 // ── Support Form ──────────────────────────────────────────────────────────────
 function SupportForm() {
@@ -206,6 +316,7 @@ function GivingMethods() {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function Charity() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [registerEvent, setRegisterEvent] = useState<typeof EVENTS[0] | null>(null);
 
   return (
     <div className="min-h-screen bg-[#07090F] text-white overflow-x-hidden">
@@ -385,7 +496,7 @@ export default function Charity() {
                       </div>
                     </div>
                     <div className="flex-shrink-0 self-center">
-                      <a href="#support" className="text-[9px] tracking-widest uppercase text-white/28 hover:text-white/60 border border-white/10 hover:border-white/25 px-4 py-2.5 rounded-lg transition-all whitespace-nowrap">Register Interest</a>
+                      <button onClick={() => setRegisterEvent(ev)} className="text-[9px] tracking-widest uppercase text-white/40 hover:text-white border border-white/12 hover:border-white/30 hover:bg-white/[0.04] px-5 py-2.5 rounded-lg transition-all whitespace-nowrap">Register Interest</button>
                     </div>
                   </div>
                 </div>
@@ -408,7 +519,7 @@ export default function Charity() {
             {TIERS.map((t, i) => (
               <Reveal key={i} delay={i * 70}>
                 <div className="border border-white/6 rounded-xl p-7 hover:border-white/15 hover:bg-white/[0.015] transition-all h-full flex flex-col">
-                  <span className="text-3xl mb-4 opacity-80">{t.icon}</span>
+                  <p className="text-[9px] tracking-[0.22em] uppercase text-white/20 mb-4">{t.tier}</p>
                   <p className="text-3xl font-black text-white mb-1" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{t.amount}</p>
                   <p className="text-[10px] tracking-[0.18em] uppercase text-white/35 mb-4">{t.label}</p>
                   <p className="text-sm text-white/45 font-light leading-relaxed mb-5 flex-1">{t.desc}</p>
@@ -515,6 +626,8 @@ export default function Charity() {
       </section>
 
       <Footer />
+
+      {registerEvent && <EventRegistrationModal event={registerEvent} onClose={() => setRegisterEvent(null)} />}
     </div>
   );
 }
