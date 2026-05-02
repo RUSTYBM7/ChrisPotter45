@@ -95,7 +95,7 @@ export default function PressKit() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#07090F]/70 via-transparent to-transparent" />
         </div>
         <HeroSocialBar />
-        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32 pl-20 md:pl-24">
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
           <motion.p
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.6 }}
             className="text-[10px] tracking-[0.24em] uppercase text-white/35 mb-5"

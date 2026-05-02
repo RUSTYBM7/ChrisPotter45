@@ -77,7 +77,7 @@ router.post("/management", async (req, res) => {
   await Promise.all([
     sendContactEmail({ "First Name": b.firstName, "Last Name": b.lastName, Email: b.email, Phone: b.phone || "—", Company: b.company || "—", Title: b.jobTitle || "—", Reason: b.reason, "Project Details": b.projectDetails || "—", Timeline: b.timeline || "—", Message: b.message || "—" }, mgmt, `Management Inquiry — ${b.reason} — ${b.firstName} ${b.lastName}`),
     sendAutoReply(b.email, b.firstName, "We received your inquiry — Chris Potter Official", "Thank you for reaching out to our management team. We have received your inquiry and will respond within <strong>3–5 business days</strong>."),
-    sendSMS(`📬 Management inquiry: ${b.reason} from ${b.firstName} ${b.lastName} (${b.email})`),
+    sendSMS(`[INQUIRY] Management: ${b.reason} from ${b.firstName} ${b.lastName} (${b.email})`),
   ]);
   return res.json({ success: true, message: "Inquiry received. Our management team will respond within 3–5 business days." });
 });
@@ -96,7 +96,7 @@ router.post("/fanbase", async (req, res) => {
   await Promise.all([
     sendContactEmail({ "First Name": b.firstName, "Last Name": b.lastName, Email: b.email, Phone: b.phone || "—", Country: b.country || "—", "Badge Tier": b.badgeTier, "Why Join": b.whyJoin || "—", Message: b.message || "—" }, fanEmail, `Fan Badge — ${b.badgeTier} — ${b.firstName} ${b.lastName}`),
     sendAutoReply(b.email, b.firstName, `Your ${b.badgeTier} Application — Chris Potter Official`, `Thank you for applying for the <strong>${b.badgeTier}</strong>! We're thrilled by your enthusiasm. Our fan team will review and reach out within <strong>48 hours</strong> to discuss your membership and exclusive benefits.`),
-    sendSMS(`⭐ Badge application: ${b.badgeTier} from ${b.firstName} ${b.lastName} (${b.email})`),
+    sendSMS(`[BADGE] ${b.badgeTier} from ${b.firstName} ${b.lastName} (${b.email})`),
   ]);
   return res.json({ success: true, message: "Thank you! Our fan team will reach out within 48 hours." });
 });
@@ -115,9 +115,28 @@ router.post("/charity", async (req, res) => {
   await Promise.all([
     sendContactEmail({ "First Name": b.firstName, "Last Name": b.lastName, Email: b.email, "Support Type": b.supportType || "—", Amount: b.amount || "—", Message: b.message }, supportEmail, `Foundation Support — ${b.supportType || "Inquiry"} — ${b.firstName} ${b.lastName}`),
     sendAutoReply(b.email, b.firstName, "Your Message to the Heartland Legacy Fund — Received", `Thank you for reaching out to the Heartland Legacy Fund. We have received your message and our support team will respond within <strong>48 hours</strong>. Your generosity and interest in the Fund means the world to us — and to the horses and youth we serve.`),
-    sendSMS(`💙 Foundation inquiry: ${b.supportType || "General"} from ${b.firstName} ${b.lastName} (${b.email})`),
+    sendSMS(`[FOUNDATION] ${b.supportType || "General"} from ${b.firstName} ${b.lastName} (${b.email})`),
   ]);
   return res.json({ success: true, message: "Thank you for your message. Our support team will get back to you within 48 hours." });
+});
+
+router.post("/event-registration", async (req, res) => {
+  const b = req.body as Record<string, string>;
+  const required = ["firstName", "lastName", "email", "eventName"];
+  const missing = required.filter(f => !b[f]);
+  if (missing.length) return res.status(400).json({ success: false, message: `Missing: ${missing.join(", ")}` });
+
+  const contacts = readJSON<any[]>("contacts.json", []);
+  contacts.push({ id: nanoid(), type: "event", status: "pending", firstName: b.firstName, lastName: b.lastName, email: b.email, eventName: b.eventName, receivedAt: new Date().toISOString(), notes: "", data: b });
+  writeJSON("contacts.json", contacts);
+
+  const supportEmail = process.env.SUPPORT_EMAIL ?? "support@chrispotterofficial.site";
+  await Promise.all([
+    sendContactEmail({ "First Name": b.firstName, "Last Name": b.lastName, Email: b.email, Phone: b.phone || "—", Event: b.eventName, "Event Date": b.eventDate || "—", "Party Size": b.partySize || "1", Message: b.message || "—" }, supportEmail, `Event Registration — ${b.eventName} — ${b.firstName} ${b.lastName}`),
+    sendAutoReply(b.email, b.firstName, `Registration Confirmed — ${b.eventName}`, `Thank you for registering your interest in <strong>${b.eventName}</strong>. We have received your registration and our events team will follow up with full details, including ticketing and logistics, as the event date approaches. We look forward to seeing you there.`),
+    sendSMS(`[EVENT] ${b.eventName} — ${b.firstName} ${b.lastName} (party: ${b.partySize || "1"}) — ${b.email}`),
+  ]);
+  return res.json({ success: true, message: "Registration received. We will follow up with full event details closer to the date." });
 });
 
 export default router;

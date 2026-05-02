@@ -39,7 +39,7 @@ export default function PageHero({
 
       <HeroSocialBar />
 
-      <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32 pl-20 md:pl-24">
+      <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
