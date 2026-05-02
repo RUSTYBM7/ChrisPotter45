@@ -406,6 +406,164 @@ function NewsletterSection() {
   );
 }
 
+// ── FUNDRAISING SECTION ──────────────────────────────────────────────────────
+// ⚠️  Replace these with real wallet addresses and payment links before publishing
+const BTC_ADDRESS  = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+const USDT_TRC20   = "TGCRkw1Vq759FBCrwxkZGgqZiqrSdpHysD";
+const STRIPE_URL   = "https://donate.stripe.com/00000000";    // Replace with your Stripe donation link
+const PAYPAL_URL   = "https://paypal.me/heartlandlegacyfund"; // Replace with your PayPal link
+
+function FundraisingSection() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copy = async (text: string, key: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 2200);
+  };
+
+  return (
+    <section id="give-back" className="py-24 md:py-36">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+        <div className="grid md:grid-cols-2 gap-16 md:gap-24 items-start">
+
+          {/* Left — cause description */}
+          <div>
+            <Reveal>
+              <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">Community Initiative</p>
+              <h2 className="text-[clamp(2.8rem,6vw,5.5rem)] font-black uppercase leading-[0.9] text-white mb-8" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+                The Heartland<br />Legacy Fund
+              </h2>
+            </Reveal>
+            <Reveal delay={80}>
+              <p className="text-base md:text-lg text-white/60 font-light leading-relaxed mb-5">
+                Chris Potter has championed the Heartland Legacy Fund for over a decade — a community initiative providing horse rescue programs and free equestrian training for underprivileged youth across Western Canada.
+              </p>
+              <p className="text-sm text-white/38 font-light leading-relaxed mb-10">
+                Rooted in the same values that define the Heartland story — compassion, resilience, and the profound bond between humans and animals — the Fund ensures the next generation of young riders can experience the transformative power of horsemanship, regardless of their background.
+              </p>
+              <div className="grid grid-cols-3 gap-6 mb-10">
+                {[
+                  { num: "400+", label: "Horses Rescued" },
+                  { num: "1,200+", label: "Youth Enrolled" },
+                  { num: "12", label: "Programs Funded" },
+                ].map((s, i) => (
+                  <div key={i}>
+                    <p className="text-[clamp(2rem,4vw,3rem)] font-black text-white leading-none mb-1.5" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{s.num}</p>
+                    <p className="text-[9px] tracking-[0.18em] uppercase text-white/28">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2.5">
+                  <span className="text-[9px] tracking-widest uppercase text-white/28">2025 Annual Goal</span>
+                  <span className="text-xs text-white/40 tabular-nums">$68,420 · $100,000</span>
+                </div>
+                <div className="h-1 bg-white/8 rounded-full overflow-hidden mb-2">
+                  <motion.div className="h-full bg-gradient-to-r from-white/50 to-white/18 rounded-full"
+                    initial={{ width: 0 }} whileInView={{ width: "68.4%" }} viewport={{ once: true }}
+                    transition={{ duration: 1.4, delay: 0.2, ease: [0.16,1,0.3,1] }} />
+                </div>
+                <p className="text-[9px] text-white/20">68% funded · Updated May 2025</p>
+              </div>
+            </Reveal>
+          </div>
+
+          {/* Right — payment options */}
+          <div>
+            <Reveal delay={120}>
+              <p className="text-[10px] tracking-[0.24em] uppercase text-white/28 mb-5">Choose How to Give</p>
+              <div className="space-y-3">
+
+                {/* Bitcoin */}
+                <div className="border border-white/8 rounded-xl p-5 bg-white/[0.02] hover:border-white/14 transition-all">
+                  <div className="flex items-center justify-between mb-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-amber-500/12 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-amber-400/80 font-black text-base leading-none">₿</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white/80">Bitcoin</p>
+                        <p className="text-[9px] tracking-wide text-white/28">BTC · Any amount</p>
+                      </div>
+                    </div>
+                    <button onClick={() => copy(BTC_ADDRESS, "btc")}
+                      className={`text-[9px] tracking-widest uppercase px-3 py-1.5 rounded border transition-all ${copied === "btc" ? "border-green-500/30 text-green-400/70" : "border-white/10 text-white/30 hover:border-white/20 hover:text-white/55"}`}>
+                      {copied === "btc" ? "✓ Copied" : "Copy"}
+                    </button>
+                  </div>
+                  <div className="bg-white/[0.025] border border-white/6 rounded-lg px-3 py-2.5">
+                    <p className="font-mono text-[10px] text-white/35 break-all leading-relaxed select-all">{BTC_ADDRESS}</p>
+                  </div>
+                </div>
+
+                {/* USDT TRC-20 */}
+                <div className="border border-white/8 rounded-xl p-5 bg-white/[0.02] hover:border-white/14 transition-all">
+                  <div className="flex items-center justify-between mb-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/18 flex items-center justify-center flex-shrink-0">
+                        <span className="text-emerald-400/75 font-black text-sm leading-none">₮</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white/80">USDT Tether</p>
+                        <p className="text-[9px] tracking-wide text-white/28">TRC-20 · TRON Network</p>
+                      </div>
+                    </div>
+                    <button onClick={() => copy(USDT_TRC20, "usdt")}
+                      className={`text-[9px] tracking-widest uppercase px-3 py-1.5 rounded border transition-all ${copied === "usdt" ? "border-green-500/30 text-green-400/70" : "border-white/10 text-white/30 hover:border-white/20 hover:text-white/55"}`}>
+                      {copied === "usdt" ? "✓ Copied" : "Copy"}
+                    </button>
+                  </div>
+                  <div className="bg-white/[0.025] border border-white/6 rounded-lg px-3 py-2.5">
+                    <p className="font-mono text-[10px] text-white/35 break-all leading-relaxed select-all">{USDT_TRC20}</p>
+                  </div>
+                </div>
+
+                {/* Stripe + PayPal */}
+                <div className="grid grid-cols-2 gap-3">
+                  <a href={STRIPE_URL} target="_blank" rel="noopener noreferrer"
+                    className="group border border-white/8 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-white/18 hover:bg-white/[0.02] transition-all text-center">
+                    <div className="w-9 h-9 rounded-full bg-indigo-500/10 border border-indigo-500/18 flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none">
+                        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-indigo-400/70" />
+                        <path d="M2 10h20" stroke="currentColor" strokeWidth="1.5" className="text-indigo-400/70" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white/75 mb-0.5">Donate by Card</p>
+                      <p className="text-[9px] text-white/28">Visa · Mastercard</p>
+                    </div>
+                    <span className="text-[8px] tracking-widest uppercase text-white/20 group-hover:text-white/45 transition-colors mt-auto">Donate →</span>
+                  </a>
+                  <a href={PAYPAL_URL} target="_blank" rel="noopener noreferrer"
+                    className="group border border-white/8 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-white/18 hover:bg-white/[0.02] transition-all text-center">
+                    <div className="w-9 h-9 rounded-full bg-blue-500/10 border border-blue-500/18 flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 text-blue-400/70" fill="currentColor">
+                        <path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.79A.774.774 0 015.706 2h7.422c2.29 0 3.974.53 5.002 1.574.97.988 1.26 2.29.879 3.969l-.113.449C18.232 10.73 15.96 12 12.83 12H10.13c-.558 0-1.04.406-1.13.957l-.852 5.396-.134.84-.938 2.144z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white/75 mb-0.5">PayPal</p>
+                      <p className="text-[9px] text-white/28">Quick & secure</p>
+                    </div>
+                    <span className="text-[8px] tracking-widest uppercase text-white/20 group-hover:text-white/45 transition-colors mt-auto">Donate →</span>
+                  </a>
+                </div>
+              </div>
+
+              <p className="text-[10px] text-white/18 mt-5 leading-relaxed">
+                For tax receipts, major gifts, or corporate sponsorship enquiries, contact us at{" "}
+                <span className="text-white/30">foundation@chrispotterofficial.site</span>
+              </p>
+            </Reveal>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── MAIN PAGE ────────────────────────────────────────────────────────────────
 const HERO_IMGS = ["/photos/IMG_0988.JPG", "/photos/IMG_0983.JPG", "/photos/IMG_0986.JPG"];
 const ROLES = ["Actor", "Director", "Producer"];
@@ -427,7 +585,7 @@ export default function Home() {
       <NavBar />
 
       {/* ── HERO ── */}
-      <section id="hero" className="relative min-h-screen flex flex-col justify-end pb-16 md:pb-20">
+      <section id="hero" className="relative min-h-screen flex flex-col justify-end pb-32 md:pb-36">
         <div className="absolute inset-0 overflow-hidden">
           <AnimatePresence mode="sync">
             <motion.img key={heroImg} src={HERO_IMGS[heroImg]} alt="Chris Potter"
@@ -441,9 +599,14 @@ export default function Home() {
 
         <HeroSocialBar />
 
-        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32 pl-20 md:pl-24">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }}
-            className="flex flex-wrap gap-3 mb-8">
+        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-[10px] tracking-[0.28em] uppercase text-white/35 mb-5">
+            Canadian Actor · Director · Producer
+          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.45 }}
+            className="flex flex-wrap gap-3 mb-7">
             {ROLES.map(role => (
               <button key={role} onClick={() => setActiveRole(role)}
                 className={`topic-pill px-5 py-2 rounded-full text-sm tracking-[0.06em] transition-all duration-250 ${activeRole === role ? "active text-white" : "text-white/55"}`}>
@@ -633,6 +796,11 @@ export default function Home() {
 
       {/* ── AWARDS & CAREER TIMELINE (2nd to last) ── */}
       <TimelineSection />
+
+      <div className="section-line mx-6 md:mx-12" />
+
+      {/* ── FUNDRAISING ── */}
+      <FundraisingSection />
 
       <div className="section-line mx-6 md:mx-12" />
 

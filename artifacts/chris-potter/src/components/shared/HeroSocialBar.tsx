@@ -50,10 +50,6 @@ export default function HeroSocialBar() {
           </span>
         </a>
 
-        {/* Persistent T1+ pill below */}
-        <div className="mt-1.5 bg-amber-500/15 border border-amber-500/25 rounded-full px-1.5 py-px">
-          <span className="text-[7px] tracking-wide uppercase text-amber-400/65 font-semibold whitespace-nowrap">T1+</span>
-        </div>
       </div>
 
       {/* Facebook */}
