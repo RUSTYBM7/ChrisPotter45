@@ -51,24 +51,28 @@ export default function NavBar({ alwaysDark = false }: NavBarProps) {
         </button>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-7 lg:gap-9">
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8">
           {(["Work", "About", "Gallery"] as const).map(label => (
             <button key={label}
               onClick={() => scrollTo(label.toLowerCase())}
-              className="nav-link text-[11px] tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors duration-200">
+              className="nav-link text-[11px] tracking-[0.18em] uppercase text-white/50 hover:text-white transition-colors duration-200">
               {label}
             </button>
           ))}
           <button onClick={() => goTo("/fanbase")}
-            className={`nav-link text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 ${isActive("/fanbase") ? "text-white" : "text-white/50 hover:text-white"}`}>
+            className={`nav-link text-[11px] tracking-[0.18em] uppercase transition-colors duration-200 ${isActive("/fanbase") ? "text-white" : "text-white/50 hover:text-white"}`}>
             Fanbase
           </button>
+          <button onClick={() => goTo("/charity")}
+            className={`nav-link text-[11px] tracking-[0.18em] uppercase transition-colors duration-200 ${isActive("/charity") ? "text-amber-400/80" : "text-white/50 hover:text-white"}`}>
+            Foundation
+          </button>
           <button onClick={() => goTo("/press-kit")}
-            className={`nav-link text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 ${isActive("/press-kit") ? "text-white" : "text-white/50 hover:text-white"}`}>
+            className={`nav-link text-[11px] tracking-[0.18em] uppercase transition-colors duration-200 ${isActive("/press-kit") ? "text-white" : "text-white/50 hover:text-white"}`}>
             Press
           </button>
           <button onClick={() => goTo("/contact")}
-            className={`ml-1 px-5 py-2 border rounded text-[10px] tracking-[0.2em] uppercase transition-all duration-200 ${
+            className={`ml-1 px-5 py-2 border rounded text-[10px] tracking-[0.18em] uppercase transition-all duration-200 ${
               isActive("/contact")
                 ? "border-white/40 text-white bg-white/8"
                 : "border-white/15 text-white/55 hover:border-white/35 hover:text-white"
@@ -86,13 +90,14 @@ export default function NavBar({ alwaysDark = false }: NavBarProps) {
       </div>
 
       {/* Mobile drawer */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-80" : "max-h-0"}`}>
+      <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-96" : "max-h-0"}`}>
         <div className="px-6 pb-8 pt-2 bg-[#07090F]/98 border-b border-white/5 flex flex-col gap-5">
           {["Work", "About", "Gallery"].map(label => (
             <button key={label} onClick={() => scrollTo(label.toLowerCase())}
               className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">{label}</button>
           ))}
           <button onClick={() => goTo("/fanbase")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">Fanbase</button>
+          <button onClick={() => goTo("/charity")} className={`text-xs tracking-[0.2em] uppercase transition-colors text-left ${isActive("/charity") ? "text-amber-400/70" : "text-white/50 hover:text-white"}`}>Foundation</button>
           <button onClick={() => goTo("/press-kit")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">Press Kit</button>
           <button onClick={() => goTo("/contact")} className="text-xs tracking-[0.2em] uppercase text-white/50 hover:text-white transition-colors text-left">Contact</button>
         </div>
