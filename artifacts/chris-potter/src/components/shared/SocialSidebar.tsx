@@ -4,19 +4,19 @@ const socials = [
   {
     label: "Telegram",
     Icon: FaTelegram,
-    href: "https://t.me/chrispotterofficial",
+    href: "https://t.me/chrispotter23",
     hoverColor: "#26A5E4",
   },
   {
     label: "WhatsApp",
     Icon: FaWhatsapp,
-    href: "https://wa.me/chrispotter",
+    href: "https://wa.me/16304642733",
     hoverColor: "#25D366",
   },
   {
     label: "Facebook",
     Icon: FaFacebook,
-    href: "https://facebook.com/chrispotterofficial",
+    href: "https://www.facebook.com/share/1JReFApieZ/?mibextid=wwXIfr",
     hoverColor: "#1877F2",
   },
   {
