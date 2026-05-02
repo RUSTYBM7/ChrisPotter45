@@ -9,6 +9,7 @@ import Fanbase from "@/pages/Fanbase";
 import PressKit from "@/pages/PressKit";
 import FanPortal from "@/pages/FanPortal";
 import Admin from "@/pages/Admin";
+import Charity from "@/pages/Charity";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ function Router() {
         <Route path="/press-kit" component={PressKit} />
         <Route path="/fan-portal" component={FanPortal} />
         <Route path="/admin" component={Admin} />
+        <Route path="/charity" component={Charity} />
         <Route component={Home} />
       </Switch>
     </>

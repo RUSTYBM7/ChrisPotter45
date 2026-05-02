@@ -101,4 +101,23 @@ router.post("/fanbase", async (req, res) => {
   return res.json({ success: true, message: "Thank you! Our fan team will reach out within 48 hours." });
 });
 
+router.post("/charity", async (req, res) => {
+  const b = req.body as Record<string, string>;
+  const required = ["firstName", "lastName", "email", "message"];
+  const missing = required.filter(f => !b[f]);
+  if (missing.length) return res.status(400).json({ success: false, message: `Missing: ${missing.join(", ")}` });
+
+  const contacts = readJSON<any[]>("contacts.json", []);
+  contacts.push({ id: nanoid(), type: "charity", status: "pending", firstName: b.firstName, lastName: b.lastName, email: b.email, receivedAt: new Date().toISOString(), notes: "", data: b });
+  writeJSON("contacts.json", contacts);
+
+  const supportEmail = process.env.SUPPORT_EMAIL ?? "support@chrispotterofficial.site";
+  await Promise.all([
+    sendContactEmail({ "First Name": b.firstName, "Last Name": b.lastName, Email: b.email, "Support Type": b.supportType || "—", Amount: b.amount || "—", Message: b.message }, supportEmail, `Foundation Support — ${b.supportType || "Inquiry"} — ${b.firstName} ${b.lastName}`),
+    sendAutoReply(b.email, b.firstName, "Your Message to the Heartland Legacy Fund — Received", `Thank you for reaching out to the Heartland Legacy Fund. We have received your message and our support team will respond within <strong>48 hours</strong>. Your generosity and interest in the Fund means the world to us — and to the horses and youth we serve.`),
+    sendSMS(`💙 Foundation inquiry: ${b.supportType || "General"} from ${b.firstName} ${b.lastName} (${b.email})`),
+  ]);
+  return res.json({ success: true, message: "Thank you for your message. Our support team will get back to you within 48 hours." });
+});
+
 export default router;

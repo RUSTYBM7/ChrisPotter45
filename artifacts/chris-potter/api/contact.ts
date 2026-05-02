@@ -174,6 +174,43 @@ export default async function handler(req: IncomingMessage & { query?: Record<st
     return;
   }
 
+  // ── /api/contact/charity ──
+  if (url.includes("/charity")) {
+    const required = ["firstName", "lastName", "email", "message"];
+    const missing = required.filter(f => !body[f]);
+    if (missing.length) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, message: `Missing: ${missing.join(", ")}` }));
+      return;
+    }
+
+    const supportEmail = process.env.SUPPORT_EMAIL ?? "support@chrispotterofficial.site";
+    const subject = `Foundation Support — ${body.supportType || "Inquiry"} — ${body.firstName} ${body.lastName}`;
+    const tableData: Record<string, string> = {
+      "First Name": body.firstName, "Last Name": body.lastName,
+      Email: body.email, "Support Type": body.supportType || "—",
+      Amount: body.amount || "—", Message: body.message,
+    };
+
+    const notifHtml = `<!DOCTYPE html><html><body style="background:#07090F;color:#fff;font-family:Arial,sans-serif;margin:0;padding:0;">
+<div style="max-width:640px;margin:0 auto;padding:48px 32px;">
+  <p style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:24px;">Heartland Legacy Fund — Foundation Support</p>
+  <h2 style="font-size:28px;font-weight:900;text-transform:uppercase;margin:0 0 32px;">${subject}</h2>
+  ${emailTable(tableData)}
+  <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:40px;">Received: ${new Date().toUTCString()}</p>
+</div></body></html>`;
+
+    await Promise.all([
+      sendEmail(supportEmail, subject, notifHtml),
+      sendAutoReply(body.email, body.firstName, "Your Message to the Heartland Legacy Fund — Received",
+        "Thank you for reaching out to the Heartland Legacy Fund. We have received your message and our support team will respond within 48 hours. Your generosity and interest in the Fund means the world to us — and to the horses and youth we serve."),
+      sendSMS("", `💙 Foundation support: ${body.supportType || "General"} from ${body.firstName} ${body.lastName} (${body.email})`),
+    ]);
+
+    res.end(JSON.stringify({ success: true, message: "Thank you for your message. Our support team will get back to you within 48 hours." }));
+    return;
+  }
+
   res.statusCode = 404;
   res.end(JSON.stringify({ success: false, message: "Not found" }));
 }
