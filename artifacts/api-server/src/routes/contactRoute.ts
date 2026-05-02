@@ -130,6 +130,10 @@ router.post("/event-registration", async (req, res) => {
   contacts.push({ id: nanoid(), type: "event", status: "pending", firstName: b.firstName, lastName: b.lastName, email: b.email, eventName: b.eventName, receivedAt: new Date().toISOString(), notes: "", data: b });
   writeJSON("contacts.json", contacts);
 
+  const counts = readJSON<Record<string, number>>("events-counts.json", {});
+  counts[b.eventName] = (counts[b.eventName] ?? 0) + 1;
+  writeJSON("events-counts.json", counts);
+
   const supportEmail = process.env.SUPPORT_EMAIL ?? "support@chrispotterofficial.site";
   await Promise.all([
     sendContactEmail({ "First Name": b.firstName, "Last Name": b.lastName, Email: b.email, Phone: b.phone || "—", Event: b.eventName, "Event Date": b.eventDate || "—", "Party Size": b.partySize || "1", Message: b.message || "—" }, supportEmail, `Event Registration — ${b.eventName} — ${b.firstName} ${b.lastName}`),

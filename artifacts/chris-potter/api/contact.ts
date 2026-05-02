@@ -1,4 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "http";
+import fs from "fs";
+import path from "path";
+
+const DATA = process.env.VERCEL ? "/tmp/cp-data" : path.join(process.cwd(), "data");
 
 async function readBody(req: IncomingMessage): Promise<Record<string, string>> {
   return new Promise((resolve, reject) => {
@@ -236,6 +240,12 @@ export default async function handler(req: IncomingMessage & { query?: Record<st
   ${emailTable(tableData)}
   <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:40px;">Received: ${new Date().toUTCString()}</p>
 </div></body></html>`;
+
+    const countPath = path.join(DATA, "events-counts.json");
+    let counts: Record<string, number> = {};
+    try { counts = JSON.parse(fs.readFileSync(countPath, "utf8")); } catch { /* fresh */ }
+    counts[body.eventName] = (counts[body.eventName] ?? 0) + 1;
+    try { if (!fs.existsSync(DATA)) fs.mkdirSync(DATA, { recursive: true }); fs.writeFileSync(countPath, JSON.stringify(counts, null, 2)); } catch { /* non-fatal */ }
 
     await Promise.all([
       sendEmail(supportEmail, subject, notifHtml),

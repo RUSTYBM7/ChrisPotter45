@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import NavBar from "@/components/shared/NavBar";
 import Footer from "@/components/shared/Footer";
@@ -317,6 +317,14 @@ function GivingMethods() {
 export default function Charity() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [registerEvent, setRegisterEvent] = useState<typeof EVENTS[0] | null>(null);
+  const [eventCounts, setEventCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then(r => r.json())
+      .then((d: { success: boolean; counts: Record<string, number> }) => { if (d.success) setEventCounts(d.counts); })
+      .catch(() => { /* non-fatal */ });
+  }, [registerEvent]);
 
   return (
     <div className="min-h-screen bg-[#07090F] text-white overflow-x-hidden">
@@ -495,7 +503,16 @@ export default function Charity() {
                         <div><p className="text-[9px] tracking-widest uppercase text-white/22 mb-1">Tickets / Entry</p><p className="text-xs text-white/55">{ev.tickets}</p></div>
                       </div>
                     </div>
-                    <div className="flex-shrink-0 self-center">
+                    <div className="flex-shrink-0 self-center flex flex-col items-center gap-3">
+                      {(eventCounts[ev.title] ?? 0) > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400/80" />
+                          </span>
+                          <span className="text-[9px] tracking-widest uppercase text-green-400/65">{eventCounts[ev.title]} registered</span>
+                        </div>
+                      )}
                       <button onClick={() => setRegisterEvent(ev)} className="text-[9px] tracking-widest uppercase text-white/40 hover:text-white border border-white/12 hover:border-white/30 hover:bg-white/[0.04] px-5 py-2.5 rounded-lg transition-all whitespace-nowrap">Register Interest</button>
                     </div>
                   </div>
