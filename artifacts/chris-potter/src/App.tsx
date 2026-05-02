@@ -8,14 +8,13 @@ import Contact from "@/pages/Contact";
 import Fanbase from "@/pages/Fanbase";
 import PressKit from "@/pages/PressKit";
 import FanPortal from "@/pages/FanPortal";
+import Admin from "@/pages/Admin";
 
 const queryClient = new QueryClient();
 
 function ScrollToTop() {
   const [location] = useLocation();
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [location]);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [location]);
   return null;
 }
 
@@ -29,6 +28,7 @@ function Router() {
         <Route path="/fanbase" component={Fanbase} />
         <Route path="/press-kit" component={PressKit} />
         <Route path="/fan-portal" component={FanPortal} />
+        <Route path="/admin" component={Admin} />
         <Route component={Home} />
       </Switch>
     </>
