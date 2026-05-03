@@ -45,7 +45,7 @@ const TIERS = [
 
 const FAQ_ITEMS = [
   { q: "How does my donation get used?", a: "100% of public donations go directly to program delivery — horse feed, veterinary care, facility costs, instructor wages, and youth transport. Administrative costs are covered separately by the Fund's founding supporters, including Chris Potter personally." },
-  { q: "Is the Heartland Legacy Fund a registered charity?", a: "The Fund operates as a community initiative under a registered non-profit umbrella. Tax receipts are available for donations of $50 CAD or more. Please contact support@chrispotterofficial.site for receipt requests." },
+  { q: "Is the Heartland Legacy Fund a registered charity?", a: "The Fund operates as a community initiative under a registered non-profit umbrella. Tax receipts are available for donations of $50 USD or more. Please contact support@chrispotterofficial.site for receipt requests." },
   { q: "Can I volunteer my time?", a: "Absolutely. We welcome volunteers for events, administrative support, social media, photography, and on-ground horse care assistance at partner ranches. Submit a support form below with 'Volunteer' selected and tell us your skills." },
   { q: "Does Chris Potter personally attend events?", a: "Chris makes every effort to attend the Annual Gala and Youth Open Day in person. He also participates remotely in quarterly donor briefings. His involvement is genuine and ongoing — this initiative was born from personal conviction, not publicity." },
   { q: "Can my company become a corporate sponsor?", a: "Yes — corporate partnerships are available at several tiers, including naming rights for youth cohorts, event title sponsorship, and logo placement across all Fund materials. Contact us via the support form to receive our corporate sponsorship deck." },
@@ -226,7 +226,7 @@ function SupportForm() {
       {form.supportType === "Donate" && (
         <div>
           <label className="block text-[9px] tracking-[0.2em] uppercase text-white/30 mb-1.5">Donation Amount (Optional)</label>
-          <input type="text" value={form.amount} onChange={e => update("amount", e.target.value)} placeholder="e.g. $100 CAD" className="w-full bg-white/[0.03] border border-white/8 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/22 transition-colors" />
+          <input type="text" value={form.amount} onChange={e => update("amount", e.target.value)} placeholder="e.g. $100 USD" className="w-full bg-white/[0.03] border border-white/8 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/18 focus:outline-none focus:border-white/22 transition-colors" />
         </div>
       )}
       <div>
@@ -274,7 +274,7 @@ function GivingMethods() {
     <div className="space-y-5">
       {/* Amount selector */}
       <div>
-        <p className="text-[9px] tracking-[0.22em] uppercase text-white/28 mb-3">Select Donation Amount (CAD)</p>
+        <p className="text-[9px] tracking-[0.22em] uppercase text-white/28 mb-3">Select Donation Amount (USD)</p>
         <div className="grid grid-cols-5 gap-2 mb-2.5">
           {AMOUNTS.map(a => (
             <button key={a} onClick={() => { setAmount(a); setCustomAmt(""); }}
@@ -335,7 +335,7 @@ function GivingMethods() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
-              {displayAmt ? `Donate $${displayAmt} CAD` : "Donate by Card"}
+              {displayAmt ? `Donate $${displayAmt} USD` : "Donate by Card"}
             </a>
             <p className="text-center text-[9px] text-white/20 mt-3 tracking-wide">Powered by <span className="text-white/35 font-medium">Stripe</span> · Secure checkout · Instant receipt</p>
           </div>
@@ -402,7 +402,7 @@ function GivingMethods() {
                 {copied === "btc" ? "✓ Address Copied" : "Copy Wallet Address"}
               </button>
             </div>
-            <p className="text-[10px] text-white/20 leading-relaxed">For a tax receipt on donations of $50 CAD or more, email <span className="text-white/32">support@chrispotterofficial.site</span> with your transaction ID.</p>
+            <p className="text-[10px] text-white/20 leading-relaxed">For a tax receipt on donations of $50 USD or more, email <span className="text-white/32">support@chrispotterofficial.site</span> with your transaction ID.</p>
           </div>
         </div>
       )}
