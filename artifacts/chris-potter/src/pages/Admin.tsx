@@ -620,7 +620,7 @@ function Settings() {
       <h2 className="text-2xl font-black uppercase text-white mb-8" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Settings</h2>
       <div className="border border-white/6 rounded-xl p-7 mb-6">
         <p className="text-[9px] tracking-widest uppercase text-white/25 mb-5">Required Environment Variables</p>
-        <p className="text-xs text-white/35 mb-5">Configure these in your hosting environment (Vercel dashboard → Settings → Environment Variables) or your Replit Secrets panel.</p>
+        <p className="text-xs text-white/35 mb-5">Configure these in your hosting environment (Vercel dashboard → Settings → Environment Variables).</p>
         <div className="space-y-3">
           {vars.map((v, i) => (
             <div key={i} className="flex items-center justify-between py-2 border-b border-white/[0.04]">

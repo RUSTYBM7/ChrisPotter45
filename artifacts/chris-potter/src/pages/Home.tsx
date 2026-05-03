@@ -413,78 +413,49 @@ function FundraisingSection() {
   return (
     <section id="give-back" className="py-24 md:py-36">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-        <div className="grid md:grid-cols-2 gap-16 md:gap-24 items-start">
-
-          {/* Left — cause description */}
-          <div>
-            <Reveal>
-              <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">Community Initiative</p>
-              <h2 className="text-[clamp(2.8rem,6vw,5.5rem)] font-black uppercase leading-[0.9] text-white mb-8" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-                The Heartland<br />Legacy Fund
-              </h2>
-            </Reveal>
-            <Reveal delay={80}>
-              <p className="text-base md:text-lg text-white/60 font-light leading-relaxed mb-5">
-                Chris Potter has championed the Heartland Legacy Fund for over a decade — a community initiative providing horse rescue programs and free equestrian training for underprivileged youth across Western Canada.
-              </p>
-              <p className="text-sm text-white/38 font-light leading-relaxed mb-10">
-                Rooted in the same values that define the Heartland story — compassion, resilience, and the profound bond between humans and animals — the Fund ensures the next generation of young riders can experience the transformative power of horsemanship, regardless of their background.
-              </p>
-              <div className="grid grid-cols-3 gap-6 mb-10">
-                {[
-                  { num: "400+", label: "Horses Rescued" },
-                  { num: "1,200+", label: "Youth Enrolled" },
-                  { num: "12", label: "Programs Funded" },
-                ].map((s, i) => (
-                  <div key={i}>
-                    <p className="text-[clamp(2rem,4vw,3rem)] font-black text-white leading-none mb-1.5" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{s.num}</p>
-                    <p className="text-[9px] tracking-[0.18em] uppercase text-white/28">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-2.5">
-                  <span className="text-[9px] tracking-widest uppercase text-white/28">2025 Annual Goal</span>
-                  <span className="text-xs text-white/40 tabular-nums">$68,420 · $100,000</span>
+        <div className="max-w-[700px]">
+          <Reveal>
+            <p className="text-[10px] tracking-[0.24em] uppercase text-white/30 mb-4">Community Initiative</p>
+            <h2 className="text-[clamp(2.8rem,6vw,5.5rem)] font-black uppercase leading-[0.9] text-white mb-8" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
+              The Heartland<br />Legacy Fund
+            </h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className="text-base md:text-lg text-white/60 font-light leading-relaxed mb-5">
+              Chris Potter has championed the Heartland Legacy Fund for over a decade — a community initiative providing horse rescue programs and free equestrian training for underprivileged youth across Western Canada.
+            </p>
+            <p className="text-sm text-white/38 font-light leading-relaxed mb-10">
+              Rooted in the same values that define the Heartland story — compassion, resilience, and the profound bond between humans and animals — the Fund ensures the next generation of young riders can experience the transformative power of horsemanship, regardless of their background.
+            </p>
+            <div className="grid grid-cols-3 gap-6 mb-10">
+              {[
+                { num: "400+", label: "Horses Rescued" },
+                { num: "1,200+", label: "Youth Enrolled" },
+                { num: "12", label: "Programs Funded" },
+              ].map((s, i) => (
+                <div key={i}>
+                  <p className="text-[clamp(2rem,4vw,3rem)] font-black text-white leading-none mb-1.5" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{s.num}</p>
+                  <p className="text-[9px] tracking-[0.18em] uppercase text-white/28">{s.label}</p>
                 </div>
-                <div className="h-1 bg-white/8 rounded-full overflow-hidden mb-2">
-                  <motion.div className="h-full bg-gradient-to-r from-white/50 to-white/18 rounded-full"
-                    initial={{ width: 0 }} whileInView={{ width: "68.4%" }} viewport={{ once: true }}
-                    transition={{ duration: 1.4, delay: 0.2, ease: [0.16,1,0.3,1] }} />
-                </div>
-                <p className="text-[9px] text-white/20">68% funded · Updated May 2025</p>
+              ))}
+            </div>
+            <div className="mb-10">
+              <div className="flex justify-between items-center mb-2.5">
+                <span className="text-[9px] tracking-widest uppercase text-white/28">2025 Annual Goal</span>
+                <span className="text-xs text-white/40 tabular-nums">$68,420 · $100,000</span>
               </div>
-            </Reveal>
-          </div>
-
-          {/* Right — giving summary + CTA */}
-          <div>
-            <Reveal delay={120}>
-              <p className="text-[10px] tracking-[0.24em] uppercase text-white/28 mb-5">Ways to Give</p>
-              <div className="space-y-2 mb-8">
-                {[
-                  { symbol: "◈", label: "Credit & Debit Card", sub: "Visa · Mastercard · Amex · Secure Stripe Checkout", color: "text-indigo-400/55" },
-                  { symbol: "◎", label: "PayPal", sub: "Quick, secure, buyer-protected donations", color: "text-blue-400/55" },
-                  { symbol: "₿", label: "Bitcoin", sub: "BTC · Any amount · On-chain mainnet wallet", color: "text-amber-400/55" },
-                  { symbol: "₮", label: "USDT Tether", sub: "TRC-20 · TRON network · Stablecoin giving", color: "text-emerald-400/55" },
-                ].map((m, i) => (
-                  <div key={i} className="flex items-center gap-4 border border-white/5 rounded-xl px-5 py-4 bg-white/[0.012]">
-                    <span className={`text-xl w-6 text-center flex-shrink-0 font-black leading-none ${m.color}`}>{m.symbol}</span>
-                    <div>
-                      <p className="text-sm font-medium text-white/75">{m.label}</p>
-                      <p className="text-[10px] text-white/28 mt-0.5">{m.sub}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="h-1 bg-white/8 rounded-full overflow-hidden mb-2">
+                <motion.div className="h-full bg-gradient-to-r from-white/50 to-white/18 rounded-full"
+                  initial={{ width: 0 }} whileInView={{ width: "68.4%" }} viewport={{ once: true }}
+                  transition={{ duration: 1.4, delay: 0.2, ease: [0.16,1,0.3,1] }} />
               </div>
-              <button onClick={() => navigate("/charity")}
-                className="w-full py-4 bg-white text-[#07090F] text-[11px] tracking-[0.22em] uppercase font-bold rounded-xl hover:bg-white/88 transition-colors shadow-lg shadow-white/5">
-                Give to the Heartland Legacy Fund
-              </button>
-              <p className="text-[10px] text-white/18 text-center mt-3">Full foundation story · all giving methods · 2025 events</p>
-            </Reveal>
-          </div>
-
+              <p className="text-[9px] text-white/20">68% funded · Updated May 2025</p>
+            </div>
+            <button onClick={() => navigate("/charity")}
+              className="px-10 py-4 bg-white text-[#07090F] text-[11px] tracking-[0.22em] uppercase font-bold rounded-xl hover:bg-white/88 transition-colors shadow-lg shadow-white/5">
+              Support the Foundation
+            </button>
+          </Reveal>
         </div>
       </div>
     </section>
