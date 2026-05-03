@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import NavBar from "@/components/shared/NavBar";
 import Footer from "@/components/shared/Footer";
-import HeroSocialBar from "@/components/shared/HeroSocialBar";
+import PageHero from "@/components/shared/PageHero";
 
 function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -80,44 +80,13 @@ export default function PressKit() {
     <div className="min-h-screen bg-[#07090F] text-white overflow-x-hidden" id="press-kit-root">
       <NavBar alwaysDark />
 
-      {/* ── HERO ── */}
-      <section className="relative min-h-[70vh] flex flex-col justify-end pb-16 md:pb-20">
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.img
-            src="/photos/IMG_0984.JPG"
-            alt="Chris Potter"
-            className="absolute inset-0 w-full h-full object-cover object-top"
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07090F] via-[#07090F]/50 to-[#07090F]/30" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07090F]/70 via-transparent to-transparent" />
-        </div>
-        <HeroSocialBar />
-        <div className="relative max-w-[1400px] mx-auto px-6 md:px-12 w-full pt-32">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-[10px] tracking-[0.24em] uppercase text-white/35 mb-5"
-          >
-            Media & Press
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.9, ease: [0.16,1,0.3,1] }}
-            className="text-[clamp(4rem,11vw,9rem)] font-black uppercase leading-[0.88] text-white"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
-            Press<br />Kit
-          </motion.h1>
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-            className="mt-6 flex items-center gap-4"
-          >
-            <div className="w-8 h-px bg-white/30" />
-            <p className="text-xs tracking-[0.22em] uppercase text-white/45">Official Assets · Bios · Photography</p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHero
+        photo="/photos/IMG_0984.JPG"
+        photoPosition="center top"
+        label="Media & Press"
+        heading={"Press\nKit"}
+        subheading="Official Assets · Bios · Photography"
+      />
 
       {/* ── DOWNLOAD BAR ── */}
       <div className="border-y border-white/5 bg-[#05070D]">

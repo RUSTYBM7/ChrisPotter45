@@ -56,7 +56,9 @@ export default function PageHero({
           style={{ fontFamily: "'Bebas Neue', sans-serif" }}
           data-testid="page-hero-heading"
         >
-          {heading}
+          {heading.split("\n").map((line, i, arr) => (
+            <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+          ))}
         </motion.h1>
         {subheading && (
           <motion.div
