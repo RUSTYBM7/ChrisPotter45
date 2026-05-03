@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import LanguageSelector from "@/components/shared/LanguageSelector";
 
 interface NavBarProps {
   alwaysDark?: boolean;
@@ -79,14 +80,18 @@ export default function NavBar({ alwaysDark = false }: NavBarProps) {
             }`}>
             Contact
           </button>
+          <LanguageSelector />
         </nav>
 
         {/* Mobile hamburger */}
-        <button className="md:hidden p-2 flex flex-col gap-[5px]" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+        <div className="md:hidden flex items-center gap-1">
+          <LanguageSelector />
+          <button className="p-2 flex flex-col gap-[5px]" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
           <span className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
           <span className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
           <span className={`block w-5 h-[1px] bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
         </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}
