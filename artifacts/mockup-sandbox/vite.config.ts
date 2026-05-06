@@ -5,56 +5,62 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
 
+/**
+ * PORT
+ * - Optional
+ * - Used only for dev / preview
+ * - Vercel does NOT provide PORT at build time
+ */
 const rawPort = process.env.PORT;
+const port =
+  rawPort && !Number.isNaN(Number(rawPort)) && Number(rawPort) > 0
+    ? Number(rawPort)
+    : 5173;
 
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
+/**
+ * BASE_PATH
+ * - Required for correct asset resolution
+ * - Default to "/" for Vercel and local builds
+ */
+const basePath = process.env.BASE_PATH ?? "/";
 
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
-
-export default defineConfig({
+export default defineConfig(async () => ({
   base: basePath,
+
   plugins: [
     mockupPreviewPlugin(),
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
+
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
-            }),
-          ),
+          (
+            await import("@replit/vite-plugin-cartographer")
+          ).cartographer({
+            root: path.resolve(import.meta.dirname, ".."),
+          }),
         ]
       : []),
   ],
+
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
     },
   },
+
   root: path.resolve(import.meta.dirname),
+
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
   },
+
+  /**
+   * Dev server only (ignored by Vercel)
+   */
   server: {
     port,
     host: "0.0.0.0",
@@ -63,9 +69,13 @@ export default defineConfig({
       strict: true,
     },
   },
+
+  /**
+   * vite preview (local only)
+   */
   preview: {
     port,
     host: "0.0.0.0",
     allowedHosts: true,
   },
-});
+}));
