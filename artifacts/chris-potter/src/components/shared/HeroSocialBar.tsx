@@ -11,7 +11,7 @@ export default function HeroSocialBar() {
 
       {/* Telegram */}
       <a
-        href="https://t.me/chrispotter23"
+        href="https://t.me/officialaccunt12"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Telegram"
