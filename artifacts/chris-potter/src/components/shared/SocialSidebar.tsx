@@ -4,7 +4,7 @@ const socials = [
   {
     label: "Telegram",
     Icon: FaTelegram,
-    href: "https://t.me/chrispotter23",
+    href: "https://t.me/officialaccunt12",
     hoverColor: "#26A5E4",
   },
   {
@@ -16,7 +16,7 @@ const socials = [
   {
     label: "Facebook",
     Icon: FaFacebook,
-    href: "https://www.facebook.com/share/1JReFApieZ/?mibextid=wwXIfr",
+    href: "https://www.facebook.com/profile.php?id=61589438727256&mibextid=wwXIfr&mibextid=wwXIfr",
     hoverColor: "#1877F2",
   },
   {
