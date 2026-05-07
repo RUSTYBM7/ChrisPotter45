@@ -18,10 +18,3 @@ export function useUnsubscribeNewsletter() {
       newsletterApi.unsubscribe(email),
   });
 }
-Usage:
-const subscribe = useSubscribeNewsletter();
-
-subscribe.mutate(
-  { email, name },
-  { onSuccess: () => toast.success("Subscribed!") }
-);
