@@ -1,10 +1,12 @@
-import { clearAdminToken } from "../auth/adminSession";
-import { queryClient } from "../queryClient";
+import { useQueryClient } from "@tanstack/react-query";
+import { clearAdminToken } from "../auth/adminSessions";
 
 export function AdminLogout() {
+  const qc = useQueryClient();
+
   function logout() {
     clearAdminToken();
-    queryClient.clear(); // ✅ remove cached admin data
+    qc.clear();
   }
 
   return <button onClick={logout}>Log out</button>;
