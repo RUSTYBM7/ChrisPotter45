@@ -1,23 +1,19 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Switch, Route } from "wouter";
 import { RequireAdmin } from "./auth/RequireAdmin";
-import { AdminLogin } from "./components/AdminLogin";
-import { AdminDashboard } from "./components/AdminDashboard";
+import { AdminLogin } from "./components/ui/AdminLogin";
+import { AdminDashboard } from "./components/ui/AdminDashboard";
 
 export function AppRouter() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/admin/login" element={<AdminLogin />} />
-
-        <Route
-          path="/admin"
-          element={
-            <RequireAdmin>
-              <AdminDashboard />
-            </RequireAdmin>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <Switch>
+      <Route path="/admin/login">
+        <AdminLogin />
+      </Route>
+      <Route path="/admin">
+        <RequireAdmin>
+          <AdminDashboard />
+        </RequireAdmin>
+      </Route>
+    </Switch>
   );
 }
