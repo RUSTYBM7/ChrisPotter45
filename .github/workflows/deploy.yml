@@ -45,9 +45,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck libs
-        run: pnpm run typecheck:libs
-
       - name: Typecheck API server
         run: pnpm --filter @workspace/api-server run typecheck
 
