@@ -75,8 +75,8 @@ export default function Footer() {
             <p className="text-[9px] tracking-[0.22em] uppercase text-white/22 mb-4">Connect</p>
             <div className="flex flex-col gap-2.5">
               {[
-                { label: "Telegram", href: "https://t.me/chrispotter23" },
-                { label: "Facebook", href: "https://www.facebook.com/share/1JReFApieZ/?mibextid=wwXIfr" },
+                { label: "Telegram", href: "https://t.me/officialaccunt12" },
+                { label: "Facebook", href: "https://www.facebook.com/chrispotterofficialsite" },
                 { label: "IMDb", href: "https://www.imdb.com/name/nm0693638/" },
                 { label: "WhatsApp (T1+)", href: "https://wa.me/16304642733" },
               ].map(({ label, href }) => (
