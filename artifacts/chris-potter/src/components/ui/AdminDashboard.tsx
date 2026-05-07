@@ -1,11 +1,11 @@
-import { getAdminToken } from "../auth/adminSession";
+import { getAdminToken } from "../../auth/adminSessions";
 import {
   useAdminStats,
   useSubscribers,
   useDeleteSubscriber,
-} from "../queries/admin";
+} from "../../queries/admin";
 import { AdminLogout } from "./AdminLogout";
-import { LoadingBlock, ErrorBlock } from "./ui/Feedback";
+import { LoadingBlock, ErrorBlock } from "./Feedback";
 
 export function AdminDashboard() {
   const token = getAdminToken()!;
