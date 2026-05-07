@@ -1,16 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as adminApi from "../api/admin";
+import { setAdminToken, clearAdminToken } from "../auth/adminSession";
 import type { Subscriber, Contact, VipRequest } from "../api/types";
 
-/* ---------- AUTH ---------- */
+/* ================= AUTH ================= */
 
 export function useAdminLogin() {
   return useMutation({
     mutationFn: adminApi.adminLogin,
+    onSuccess: (res) => {
+      setAdminToken(res.data.token);
+    },
   });
 }
 
-/* ---------- DASHBOARD ---------- */
+export function useAdminLogout() {
+  const qc = useQueryClient();
+  return () => {
+    clearAdminToken();
+    qc.clear();
+  };
+}
+
+/* ================= DASHBOARD ================= */
 
 export function useAdminStats(token: string) {
   return useQuery({
@@ -20,9 +32,12 @@ export function useAdminStats(token: string) {
   });
 }
 
-/* ---------- SUBSCRIBERS ---------- */
+/* ================= SUBSCRIBERS ================= */
 
-export function useSubscribers(token: string, params?: { search?: string; tag?: string }) {
+export function useSubscribers(
+  token: string,
+  params?: { search?: string; tag?: string },
+) {
   return useQuery({
     queryKey: ["admin", "subscribers", params],
     queryFn: () => adminApi.listSubscribers(token, params),
@@ -37,7 +52,25 @@ export function useUpdateSubscriber(token: string) {
     mutationFn: (data: Partial<Subscriber> & { email: string }) =>
       adminApi.updateSubscriber(token, data),
 
-    onSuccess: () => {
+    onMutate: async (data) => {
+      await qc.cancelQueries({ queryKey: ["admin", "subscribers"] });
+
+      const previous = qc.getQueryData<Subscriber[]>(["admin", "subscribers"]);
+
+      qc.setQueryData<Subscriber[]>(["admin", "subscribers"], (old) =>
+        old?.map((s) =>
+          s.email === data.email ? { ...s, ...data } : s,
+        ),
+      );
+
+      return { previous };
+    },
+
+    onError: (_err, _data, ctx) => {
+      qc.setQueryData(["admin", "subscribers"], ctx?.previous);
+    },
+
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["admin", "subscribers"] });
     },
   });
@@ -56,7 +89,7 @@ export function useDeleteSubscriber(token: string) {
   });
 }
 
-/* ---------- CONTACTS ---------- */
+/* ================= CONTACTS ================= */
 
 export function useContacts(
   token: string,
@@ -82,9 +115,12 @@ export function useUpdateContact(token: string) {
   });
 }
 
-/* ---------- VIP ---------- */
+/* ================= VIP ================= */
 
-export function useVip(token: string, params?: { status?: string; type?: string }) {
+export function useVip(
+  token: string,
+  params?: { status?: string; type?: string },
+) {
   return useQuery({
     queryKey: ["admin", "vip", params],
     queryFn: () => adminApi.listVip(token, params),
@@ -105,7 +141,7 @@ export function useUpdateVip(token: string) {
   });
 }
 
-/* ---------- COMPOSE ---------- */
+/* ================= COMPOSE ================= */
 
 export function useSendAdminEmail(token: string) {
   return useMutation({
@@ -113,5 +149,3 @@ export function useSendAdminEmail(token: string) {
       adminApi.sendAdminEmail(token, payload),
   });
 }
-
----
