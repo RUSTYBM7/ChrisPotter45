@@ -1,4 +1,4 @@
-import { useAdminLogout } from "../queries/admin";
+import { useAdminLogout } from "../../queries/admin";
 
 export function AdminLogout() {
   const logout = useAdminLogout();
