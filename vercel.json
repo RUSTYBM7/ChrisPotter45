@@ -1,72 +1,33 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "artifacts/api-server/index.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "artifacts/chris-potter/vite.config.ts",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "artifacts/chris-potter/dist/public" }
-    },
-    {
-      "src": "artifacts/mockup/vite.config.ts",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "artifacts/mockup/dist/public" }
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run typecheck:libs && pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/chris-potter run build",
+  "outputDirectory": "artifacts/chris-potter/dist/public",
+  "framework": null,
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "includeFiles": "artifacts/api-server/dist/**"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/artifacts/api-server/index.js"
-    },
-    {
-      "src": "/mockup/(.*)",
-      "dest": "/artifacts/mockup/dist/public/index.html"
-    },
-    {
-      "src": "/mockup",
-      "dest": "/artifacts/mockup/dist/public/index.html"
-    },
-    {
-      "src": "/chris-potter/(.*)",
-      "dest": "/artifacts/chris-potter/dist/public/index.html"
-    },
-    {
-      "src": "/chris-potter",
-      "dest": "/artifacts/chris-potter/dist/public/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/artifacts/chris-potter/dist/public/index.html"
-    }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index.js" },
+    { "source": "/(.*)",       "destination": "/index.html" }
   ],
   "headers": [
+    {
+      "source": "/assets/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
     {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-      ]
-    },
-    {
-      "source": "/artifacts/chris-potter/dist/public/(photos|assets)/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    },
-    {
-      "source": "/artifacts/mockup/dist/public/(photos|assets)/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" }
       ]
     }
   ],
   "env": {
-    "BASE_PATH": "/"
-  },
-  "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/chris-potter run build && pnpm --filter @workspace/mockup run build",
-  "outputDirectory": "."
+    "NODE_ENV": "production"
+  }
 }
