@@ -5,32 +5,32 @@ async function json(res: Response) {
   return res.json();
 }
 
-export function submitManagement(data: any) {
-  return json(fetch(`${BASE}/management`, {
+export async function submitManagement(data: any) {
+  return json(await fetch(`${BASE}/management`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   }));
 }
 
-export function submitFanbase(data: any) {
-  return json(fetch(`${BASE}/fanbase`, {
+export async function submitFanbase(data: any) {
+  return json(await fetch(`${BASE}/fanbase`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   }));
 }
 
-export function submitCharity(data: any) {
-  return json(fetch(`${BASE}/charity`, {
+export async function submitCharity(data: any) {
+  return json(await fetch(`${BASE}/charity`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   }));
 }
 
-export function submitEventRegistration(data: any) {
-  return json(fetch(`${BASE}/event-registration`, {
+export async function submitEventRegistration(data: any) {
+  return json(await fetch(`${BASE}/event-registration`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
