@@ -63,7 +63,7 @@ export default function HeroSocialBar() {
 
       {/* Facebook */}
       <a
-        href="https://www.facebook.com/profile.php?id=61589438727256&mibextid=wwXIfr&mibextid=wwXIfr"
+        href="https://www.facebook.com/chrispotterofficialsite"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Facebook"
