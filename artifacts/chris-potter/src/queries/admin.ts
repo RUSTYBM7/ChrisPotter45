@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as adminApi from "../api/admin";
-import { setAdminToken, clearAdminToken } from "../auth/adminSession";
+import { setAdminToken, clearAdminToken } from "../auth/adminSessions";
 import type { Subscriber, Contact, VipRequest } from "../api/types";
+import type { ApiSuccess } from "../api/types";
 
 /* ================= AUTH ================= */
 
@@ -9,7 +10,9 @@ export function useAdminLogin() {
   return useMutation({
     mutationFn: adminApi.adminLogin,
     onSuccess: (res) => {
-      setAdminToken(res.data.token);
+      if (res.success) {
+        setAdminToken((res as ApiSuccess<{ token: string }>).data!.token);
+      }
     },
   });
 }
