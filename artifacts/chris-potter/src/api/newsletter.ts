@@ -6,7 +6,7 @@ async function json(res: Response) {
 }
 
 export async function subscribe(email: string, name?: string) {
-  return json(fetch(`${BASE}/subscribe`, {
+  return json(await fetch(`${BASE}/subscribe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, name }),
@@ -14,7 +14,7 @@ export async function subscribe(email: string, name?: string) {
 }
 
 export async function unsubscribe(email: string) {
-  return json(fetch(`${BASE}/unsubscribe`, {
+  return json(await fetch(`${BASE}/unsubscribe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
