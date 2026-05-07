@@ -4,13 +4,15 @@ on:
   push:
     branches:
       - replit-agent
+      - main
   pull_request:
     branches:
       - replit-agent
+      - main
 
 env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_ORG_ID: team_ly9LiG6M5DrRcpAcrt4PTNDO
+  VERCEL_PROJECT_ID: prj_paJSmoL0vVBhRvJ6hFmBJ2Hk6ngX
 
 jobs:
   ci:
@@ -51,17 +53,36 @@ jobs:
       - name: Typecheck API server
         run: pnpm --filter @workspace/api-server run typecheck
 
+      - name: Typecheck frontend
+        run: pnpm --filter @workspace/chris-potter run typecheck
+
       - name: Build API server
         run: pnpm --filter @workspace/api-server run build
+
+      - name: Build frontend
+        run: pnpm --filter @workspace/chris-potter run build
 
   deploy:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: ci
-    if: github.ref == 'refs/heads/replit-agent' && github.event_name == 'push'
+    if: github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Remove stale .vercel directory
         run: rm -rf .vercel
@@ -69,5 +90,47 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
+      - name: Write correct vercel.json
+        run: |
+          cat > vercel.json << 'EOF'
+          {
+            "version": 2,
+            "installCommand": "pnpm install",
+            "buildCommand": "pnpm run typecheck:libs && pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/chris-potter run build",
+            "outputDirectory": "artifacts/chris-potter/dist/public",
+            "framework": null,
+            "functions": {
+              "api/index.js": {
+                "maxDuration": 30,
+                "includeFiles": "artifacts/api-server/dist/**"
+              }
+            },
+            "rewrites": [
+              { "source": "/api/:path*", "destination": "/api/index.js" },
+              { "source": "/(.*)",       "destination": "/index.html" }
+            ],
+            "headers": [
+              {
+                "source": "/assets/:path*",
+                "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+              },
+              {
+                "source": "/(.*)",
+                "headers": [
+                  { "key": "X-Content-Type-Options", "value": "nosniff" },
+                  { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" }
+                ]
+              }
+            ],
+            "env": {
+              "NODE_ENV": "production"
+            }
+          }
+          EOF
+
       - name: Deploy to Vercel Production
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel deploy --prod --yes \
+            --token=${{ secrets.VERCEL_TOKEN }} \
+            --scope=rustybms-projects \
+            --name=chris-potter-rusty
