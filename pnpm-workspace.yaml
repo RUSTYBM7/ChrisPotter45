@@ -29,6 +29,7 @@ minimumReleaseAge: 1440
 
 packages:
   - artifacts/*
+  - apps/*
   - lib/*
   - lib/integrations/*
   - scripts
