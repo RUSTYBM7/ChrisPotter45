@@ -20,5 +20,3 @@ export async function verifyMagicLink(token: string) {
     body: JSON.stringify({ token }),
   }));
 }
-
----
