@@ -17,17 +17,30 @@
     }
   ],
   "routes": [
-    // API routes
-    { "src": "/api/(.*)", "dest": "/artifacts/api-server/index.js" },
-
-    // Frontend Chris Potter routes
-    { "src": "/(.*)", "dest": "/artifacts/chris-potter/dist/public/index.html" },
-    { "src": "/chris-potter/(.*)", "dest": "/artifacts/chris-potter/dist/public/index.html" },
-    { "src": "/chris-potter", "dest": "/artifacts/chris-potter/dist/public/index.html" },
-
-    // Mockup routes
-    { "src": "/mockup/(.*)", "dest": "/artifacts/mockup/dist/public/index.html" },
-    { "src": "/mockup", "dest": "/artifacts/mockup/dist/public/index.html" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/artifacts/api-server/index.js"
+    },
+    {
+      "src": "/mockup/(.*)",
+      "dest": "/artifacts/mockup/dist/public/index.html"
+    },
+    {
+      "src": "/mockup",
+      "dest": "/artifacts/mockup/dist/public/index.html"
+    },
+    {
+      "src": "/chris-potter/(.*)",
+      "dest": "/artifacts/chris-potter/dist/public/index.html"
+    },
+    {
+      "src": "/chris-potter",
+      "dest": "/artifacts/chris-potter/dist/public/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/artifacts/chris-potter/dist/public/index.html"
+    }
   ],
   "headers": [
     {
