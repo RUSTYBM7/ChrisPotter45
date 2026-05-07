@@ -6,5 +6,5 @@ async function json(res: Response) {
 }
 
 export async function getEventCounts() {
-  return json(fetch(BASE));
+  return json(await fetch(BASE));
 }
