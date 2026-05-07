@@ -6,6 +6,8 @@ import {
 } from "../../queries/admin";
 import { AdminLogout } from "./AdminLogout";
 import { LoadingBlock, ErrorBlock } from "./Feedback";
+import type { ApiSuccess } from "../../api/types";
+import type { AdminStats, Subscriber } from "../../api/types";
 
 export function AdminDashboard() {
   const token = getAdminToken()!;
@@ -21,6 +23,9 @@ export function AdminDashboard() {
     return <ErrorBlock message="Failed to load admin data." />;
   }
 
+  const statsData = stats.data?.success ? (stats.data as ApiSuccess<AdminStats>).data : undefined;
+  const subsData = subs.data?.success ? (subs.data as ApiSuccess<Subscriber[]>).data : undefined;
+
   return (
     <div style={{ padding: 24 }}>
       {/* HEADER */}
@@ -31,16 +36,16 @@ export function AdminDashboard() {
 
       {/* STATS GRID */}
       <div style={gridStyle}>
-        <StatCard label="Subscribers" value={stats.data?.subscribers} />
-        <StatCard label="VIP Requests" value={stats.data?.vipRequests} />
-        <StatCard label="Contacts" value={stats.data?.totalContacts} />
+        <StatCard label="Subscribers" value={statsData?.subscribers} />
+        <StatCard label="VIP Requests" value={statsData?.vipRequests} />
+        <StatCard label="Contacts" value={statsData?.totalContacts} />
       </div>
 
       {/* SUBSCRIBER LIST */}
       <section>
         <h2>Subscribers</h2>
         <div style={listStyle}>
-          {subs.data?.map((s) => (
+          {subsData?.map((s) => (
             <div key={s.email} style={rowStyle}>
               <span>{s.email}</span>
               <button onClick={() => del.mutate(s.email)}>Delete</button>
