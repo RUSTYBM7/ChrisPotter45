@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getAdminToken } from "./adminSession";
+import { getAdminToken } from "./adminSessions";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function useHydrateAdminSession() {
@@ -8,7 +8,6 @@ export function useHydrateAdminSession() {
   useEffect(() => {
     const token = getAdminToken();
     if (token) {
-      // Trigger admin queries lazily when needed
       qc.invalidateQueries({ queryKey: ["admin"] });
     }
   }, [qc]);
