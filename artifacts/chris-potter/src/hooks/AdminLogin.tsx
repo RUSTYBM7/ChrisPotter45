@@ -1,5 +1,6 @@
 import { useAdminLogin } from "../queries/admin";
-import { setAdminToken } from "../auth/adminSession";
+import { setAdminToken } from "../auth/adminSessions";
+import type { ApiSuccess } from "../api/types";
 
 export function AdminLogin() {
   const login = useAdminLogin();
@@ -7,8 +8,9 @@ export function AdminLogin() {
   function handleLogin(password: string) {
     login.mutate(password, {
       onSuccess: (res) => {
-        // ✅ token persistence happens HERE
-        setAdminToken(res.data.token);
+        if (res.success) {
+          setAdminToken((res as ApiSuccess<{ token: string }>).data!.token);
+        }
       },
     });
   }
