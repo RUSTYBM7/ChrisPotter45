@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAdminLogin } from "../queries/admin";
+import { useAdminLogin } from "../../queries/admin";
 
 export function AdminLogin() {
   const [password, setPassword] = useState("");
