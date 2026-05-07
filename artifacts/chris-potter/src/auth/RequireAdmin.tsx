@@ -1,12 +1,13 @@
-import { Navigate } from "react-router-dom";
-import { getAdminToken } from "./adminSession";
+import { Redirect } from "wouter";
+import type { ReactNode } from "react";
+import { getAdminToken } from "./adminSessions";
 
-export function RequireAdmin({ children }: { children: JSX.Element }) {
+export function RequireAdmin({ children }: { children: ReactNode }) {
   const token = getAdminToken();
 
   if (!token) {
-    return <Navigate to="/admin/login" replace />;
+    return <Redirect to="/admin/login" />;
   }
 
-  return children;
+  return <>{children}</>;
 }
