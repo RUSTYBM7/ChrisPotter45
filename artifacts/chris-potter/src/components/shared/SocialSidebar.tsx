@@ -16,7 +16,7 @@ const socials = [
   {
     label: "Facebook",
     Icon: FaFacebook,
-    href: "https://www.facebook.com/profile.php?id=61589438727256&mibextid=wwXIfr&mibextid=wwXIfr",
+    href: "https://www.facebook.com/chrispotterofficialsite",
     hoverColor: "#1877F2",
   },
   {
