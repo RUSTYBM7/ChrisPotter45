@@ -6,7 +6,7 @@ async function json(res: Response) {
 }
 
 export async function requestMagicLink(email: string) {
-  return json(fetch(`${BASE}/request`, {
+  return json(await fetch(`${BASE}/request`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -14,7 +14,7 @@ export async function requestMagicLink(email: string) {
 }
 
 export async function verifyMagicLink(token: string) {
-  return json(fetch(`${BASE}/verify`, {
+  return json(await fetch(`${BASE}/verify`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
